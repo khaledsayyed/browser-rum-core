@@ -1,0 +1,1 @@
+{"version":3,"file":"ciTestContext.js","sourceRoot":"","sources":["../../src/domain/ciTestContext.ts"],"names":[],"mappings":";;;AAMA,SAAgB,gBAAgB;;IAC9B,IAAM,eAAe,GAAG,MAAC,MAAuB,CAAC,OAAO,0CAAE,GAAG,CAAC,SAAS,CAAC,CAAA;IAExE,IAAI,OAAO,eAAe,KAAK,QAAQ,EAAE;QACvC,OAAO;YACL,iBAAiB,EAAE,eAAe;SACnC,CAAA;KACF;AACH,CAAC;AARD,4CAQC"}
