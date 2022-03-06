@@ -27,6 +27,6 @@ export function validateAndBuildRumConfiguration(initConfiguration) {
     }
     return __assign(__assign({}, baseConfiguration), { applicationId: initConfiguration.applicationId, actionNameAttribute: initConfiguration.actionNameAttribute, replaySampleRate: (_a = initConfiguration.replaySampleRate) !== null && _a !== void 0 ? _a : 100, allowedTracingOrigins: (_b = initConfiguration.allowedTracingOrigins) !== null && _b !== void 0 ? _b : [], trackInteractions: !!initConfiguration.trackInteractions, trackViewsManually: !!initConfiguration.trackViewsManually, defaultPrivacyLevel: objectHasValue(DefaultPrivacyLevel, initConfiguration.defaultPrivacyLevel)
             ? initConfiguration.defaultPrivacyLevel
-            : DefaultPrivacyLevel.MASK_USER_INPUT });
+            : DefaultPrivacyLevel.MASK_USER_INPUT, maxActionsPerMinute: 3000, proxyApiKey: initConfiguration.proxyApiKey });
 }
 //# sourceMappingURL=configuration.js.map

@@ -191,9 +191,6 @@ export interface RumContext {
     }
     browser_sdk_version?: string
   }
-  ci_test?: {
-    test_execution_id: string
-  }
 }
 
 export interface ViewContext extends Context {

@@ -39,7 +39,7 @@ function makeRumBatch(configuration: RumConfiguration, lifeCycle: LifeCycle): Ru
 
   function createRumBatch(endpointBuilder: EndpointBuilder, unloadCallback?: () => void) {
     return new Batch(
-      new HttpRequest(endpointBuilder, configuration.batchBytesLimit),
+      new HttpRequest(endpointBuilder, configuration.batchBytesLimit, { proxyApiKey: configuration.proxyApiKey }),
       configuration.maxBatchSize,
       configuration.batchBytesLimit,
       configuration.maxMessageSize,

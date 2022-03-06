@@ -10,11 +10,11 @@ export declare function startRum(configuration: RumConfiguration, internalMonito
     addError: ({ error, handlingStack, startClocks, context: customerContext }: import("../domain/rumEventsCollection/error/errorCollection").ProvidedError, savedCommonContext?: CommonContext | undefined) => void;
     addTiming: (name: string, time?: import("@datadog/browser-core").TimeStamp | import("@datadog/browser-core").RelativeTime) => void;
     startView: (name?: string | undefined, startClocks?: import("@datadog/browser-core").ClocksState | undefined) => void;
-    stopView: () => void;
     lifeCycle: LifeCycle;
     parentContexts: import("../domain/parentContexts").ParentContexts;
     session: RumSessionManager;
     getInternalContext: (startTime?: number | undefined) => import("../rawRumEvent.types").InternalContext | undefined;
+    stopView: () => void;
 };
 export declare function startRumEventCollection(lifeCycle: LifeCycle, configuration: RumConfiguration, location: Location, sessionManager: RumSessionManager, locationChangeObservable: Observable<LocationChange>, getCommonContext: () => CommonContext): {
     parentContexts: import("../domain/parentContexts").ParentContexts;

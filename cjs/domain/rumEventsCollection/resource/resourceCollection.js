@@ -13,7 +13,7 @@ function startResourceCollection(lifeCycle) {
         lifeCycle.notify(lifeCycle_1.LifeCycleEventType.RAW_RUM_EVENT_COLLECTED, processRequest(request));
     });
     lifeCycle.subscribe(lifeCycle_1.LifeCycleEventType.PERFORMANCE_ENTRY_COLLECTED, function (entry) {
-        if (entry.entryType === 'resource' && !(0, resourceUtils_1.isRequestKind)(entry)) {
+        if (entry.entryType === 'resource' && !resourceUtils_1.isRequestKind(entry)) {
             lifeCycle.notify(lifeCycle_1.LifeCycleEventType.RAW_RUM_EVENT_COLLECTED, processResourceEntry(entry));
         }
     });
@@ -21,16 +21,16 @@ function startResourceCollection(lifeCycle) {
 exports.startResourceCollection = startResourceCollection;
 function processRequest(request) {
     var type = request.type === browser_core_1.RequestType.XHR ? browser_core_1.ResourceType.XHR : browser_core_1.ResourceType.FETCH;
-    var matchingTiming = (0, matchRequestTiming_1.matchRequestTiming)(request);
-    var startClocks = matchingTiming ? (0, browser_core_1.relativeToClocks)(matchingTiming.startTime) : request.startClocks;
+    var matchingTiming = matchRequestTiming_1.matchRequestTiming(request);
+    var startClocks = matchingTiming ? browser_core_1.relativeToClocks(matchingTiming.startTime) : request.startClocks;
     var correspondingTimingOverrides = matchingTiming ? computePerformanceEntryMetrics(matchingTiming) : undefined;
     var tracingInfo = computeRequestTracingInfo(request);
-    var resourceEvent = (0, browser_core_1.combine)({
+    var resourceEvent = browser_core_1.combine({
         date: startClocks.timeStamp,
         resource: {
-            id: (0, browser_core_1.generateUUID)(),
+            id: browser_core_1.generateUUID(),
             type: type,
-            duration: (0, browser_core_1.toServerDuration)(request.duration),
+            duration: browser_core_1.toServerDuration(request.duration),
             method: request.method,
             status_code: request.status,
             url: request.url,
@@ -51,14 +51,14 @@ function processRequest(request) {
     };
 }
 function processResourceEntry(entry) {
-    var type = (0, resourceUtils_1.computeResourceKind)(entry);
+    var type = resourceUtils_1.computeResourceKind(entry);
     var entryMetrics = computePerformanceEntryMetrics(entry);
     var tracingInfo = computeEntryTracingInfo(entry);
-    var startClocks = (0, browser_core_1.relativeToClocks)(entry.startTime);
-    var resourceEvent = (0, browser_core_1.combine)({
+    var startClocks = browser_core_1.relativeToClocks(entry.startTime);
+    var resourceEvent = browser_core_1.combine({
         date: startClocks.timeStamp,
         resource: {
-            id: (0, browser_core_1.generateUUID)(),
+            id: browser_core_1.generateUUID(),
             type: type,
             url: entry.name,
         },
@@ -74,7 +74,7 @@ function processResourceEntry(entry) {
 }
 function computePerformanceEntryMetrics(timing) {
     return {
-        resource: (0, tslib_1.__assign)({ duration: (0, resourceUtils_1.computePerformanceResourceDuration)(timing), size: (0, resourceUtils_1.computeSize)(timing) }, (0, resourceUtils_1.computePerformanceResourceDetails)(timing)),
+        resource: tslib_1.__assign({ duration: resourceUtils_1.computePerformanceResourceDuration(timing), size: resourceUtils_1.computeSize(timing) }, resourceUtils_1.computePerformanceResourceDetails(timing)),
     };
 }
 function computeRequestTracingInfo(request) {
@@ -93,7 +93,7 @@ function computeEntryTracingInfo(entry) {
     return entry.traceId ? { _dd: { trace_id: entry.traceId } } : undefined;
 }
 function toPerformanceEntryRepresentation(entry) {
-    if ((0, performanceCollection_1.supportPerformanceEntry)() && entry instanceof PerformanceEntry) {
+    if (performanceCollection_1.supportPerformanceEntry() && entry instanceof PerformanceEntry) {
         entry.toJSON();
     }
     return entry;

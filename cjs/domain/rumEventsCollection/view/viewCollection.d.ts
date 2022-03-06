@@ -8,4 +8,5 @@ export declare function startViewCollection(lifeCycle: LifeCycle, configuration:
     addTiming: (name: string, time?: import("@datadog/browser-core").TimeStamp | import("@datadog/browser-core").RelativeTime) => void;
     startView: (name?: string | undefined, startClocks?: import("@datadog/browser-core").ClocksState | undefined) => void;
     stop: () => void;
+    stopView: () => void;
 };

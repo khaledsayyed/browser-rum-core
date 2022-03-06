@@ -10,7 +10,7 @@ function validateAndBuildRumConfiguration(initConfiguration) {
         browser_core_1.display.error('Application ID is not configured, no RUM data will be collected.');
         return;
     }
-    if (initConfiguration.replaySampleRate !== undefined && !(0, browser_core_1.isPercentage)(initConfiguration.replaySampleRate)) {
+    if (initConfiguration.replaySampleRate !== undefined && !browser_core_1.isPercentage(initConfiguration.replaySampleRate)) {
         browser_core_1.display.error('Replay Sample Rate should be a number between 0 and 100');
         return;
     }
@@ -24,13 +24,13 @@ function validateAndBuildRumConfiguration(initConfiguration) {
             return;
         }
     }
-    var baseConfiguration = (0, browser_core_1.validateAndBuildConfiguration)(initConfiguration, buildEnv_1.buildEnv);
+    var baseConfiguration = browser_core_1.validateAndBuildConfiguration(initConfiguration, buildEnv_1.buildEnv);
     if (!baseConfiguration) {
         return;
     }
-    return (0, tslib_1.__assign)((0, tslib_1.__assign)({}, baseConfiguration), { applicationId: initConfiguration.applicationId, actionNameAttribute: initConfiguration.actionNameAttribute, replaySampleRate: (_a = initConfiguration.replaySampleRate) !== null && _a !== void 0 ? _a : 100, allowedTracingOrigins: (_b = initConfiguration.allowedTracingOrigins) !== null && _b !== void 0 ? _b : [], trackInteractions: !!initConfiguration.trackInteractions, trackViewsManually: !!initConfiguration.trackViewsManually, defaultPrivacyLevel: (0, browser_core_1.objectHasValue)(browser_core_1.DefaultPrivacyLevel, initConfiguration.defaultPrivacyLevel)
+    return tslib_1.__assign(tslib_1.__assign({}, baseConfiguration), { applicationId: initConfiguration.applicationId, actionNameAttribute: initConfiguration.actionNameAttribute, replaySampleRate: (_a = initConfiguration.replaySampleRate) !== null && _a !== void 0 ? _a : 100, allowedTracingOrigins: (_b = initConfiguration.allowedTracingOrigins) !== null && _b !== void 0 ? _b : [], trackInteractions: !!initConfiguration.trackInteractions, trackViewsManually: !!initConfiguration.trackViewsManually, defaultPrivacyLevel: browser_core_1.objectHasValue(browser_core_1.DefaultPrivacyLevel, initConfiguration.defaultPrivacyLevel)
             ? initConfiguration.defaultPrivacyLevel
-            : browser_core_1.DefaultPrivacyLevel.MASK_USER_INPUT });
+            : browser_core_1.DefaultPrivacyLevel.MASK_USER_INPUT, maxActionsPerMinute: 3000, proxyApiKey: initConfiguration.proxyApiKey });
 }
 exports.validateAndBuildRumConfiguration = validateAndBuildRumConfiguration;
 //# sourceMappingURL=configuration.js.map

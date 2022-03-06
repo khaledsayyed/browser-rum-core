@@ -14,7 +14,7 @@ function trackFirstHidden(emitter) {
             trackFirstHiddenSingleton = {
                 timeStamp: Infinity,
             };
-            (stopListeners = (0, browser_core_1.addEventListener)(emitter, "pagehide" /* PAGE_HIDE */, function (_a) {
+            (stopListeners = browser_core_1.addEventListener(emitter, "pagehide" /* PAGE_HIDE */, function (_a) {
                 var timeStamp = _a.timeStamp;
                 trackFirstHiddenSingleton.timeStamp = timeStamp;
             }, { capture: true, once: true }).stop);

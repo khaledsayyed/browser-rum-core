@@ -1,23 +1,23 @@
 {
   "name": "@datadog/browser-rum-core",
-  "version": "4.0.1",
+  "version": "3.10.1",
   "license": "Apache-2.0",
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "types": "cjs/index.d.ts",
   "scripts": {
     "build": "run-p build:cjs build:esm",
-    "build:cjs": "rm -rf cjs && npx tsc -p tsconfig.cjs.json && yarn replace-build-env cjs",
-    "build:esm": "rm -rf esm && npx tsc -p tsconfig.esm.json && yarn replace-build-env esm",
+    "build:cjs": "rm -rf cjs && tsc -p tsconfig.cjs.json && yarn replace-build-env cjs",
+    "build:esm": "rm -rf esm && tsc -p tsconfig.esm.json && yarn replace-build-env esm",
     "replace-build-env": "node ../../scripts/replace-build-env.js"
   },
   "dependencies": {
-    "@datadog/browser-core": "4.0.1",
-    "tslib": "2.3.1",
-    "typescript": "4.5.4"
+    "@datadog/browser-core": "khaledsayyed/browser-core#3360715f0cfc6ee3d5da8799e43be9bb1351a6ba",
+    "tslib": "^1.10.0"
   },
   "devDependencies": {
-    "ajv": "6.12.6"
+    "ajv": "6.12.6",
+    "typescript": "4.1.5"
   },
   "repository": {
     "type": "git",

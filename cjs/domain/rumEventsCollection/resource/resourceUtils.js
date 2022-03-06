@@ -14,24 +14,24 @@ var RESOURCE_TYPES = [
     [
         browser_core_1.ResourceType.IMAGE,
         function (initiatorType, path) {
-            return (0, browser_core_1.includes)(['image', 'img', 'icon'], initiatorType) || /\.(gif|jpg|jpeg|tiff|png|svg|ico)$/i.exec(path) !== null;
+            return browser_core_1.includes(['image', 'img', 'icon'], initiatorType) || /\.(gif|jpg|jpeg|tiff|png|svg|ico)$/i.exec(path) !== null;
         },
     ],
     [browser_core_1.ResourceType.FONT, function (_, path) { return /\.(woff|eot|woff2|ttf)$/i.exec(path) !== null; }],
     [
         browser_core_1.ResourceType.MEDIA,
         function (initiatorType, path) {
-            return (0, browser_core_1.includes)(['audio', 'video'], initiatorType) || /\.(mp3|mp4)$/i.exec(path) !== null;
+            return browser_core_1.includes(['audio', 'video'], initiatorType) || /\.(mp3|mp4)$/i.exec(path) !== null;
         },
     ],
 ];
 function computeResourceKind(timing) {
     var url = timing.name;
-    if (!(0, browser_core_1.isValidUrl)(url)) {
-        (0, browser_core_1.addMonitoringMessage)("Failed to construct URL for \"".concat(timing.name, "\""));
+    if (!browser_core_1.isValidUrl(url)) {
+        browser_core_1.addMonitoringMessage("Failed to construct URL for \"" + timing.name + "\"");
         return browser_core_1.ResourceType.OTHER;
     }
-    var path = (0, browser_core_1.getPathName)(url);
+    var path = browser_core_1.getPathName(url);
     for (var _i = 0, RESOURCE_TYPES_1 = RESOURCE_TYPES; _i < RESOURCE_TYPES_1.length; _i++) {
         var _a = RESOURCE_TYPES_1[_i], type = _a[0], isType = _a[1];
         if (isType(timing.initiatorType, path)) {
@@ -61,9 +61,9 @@ function computePerformanceResourceDuration(entry) {
     var duration = entry.duration, startTime = entry.startTime, responseEnd = entry.responseEnd;
     // Safari duration is always 0 on timings blocked by cross origin policies.
     if (duration === 0 && startTime < responseEnd) {
-        return (0, browser_core_1.toServerDuration)((0, browser_core_1.elapsed)(startTime, responseEnd));
+        return browser_core_1.toServerDuration(browser_core_1.elapsed(startTime, responseEnd));
     }
-    return (0, browser_core_1.toServerDuration)(duration);
+    return browser_core_1.toServerDuration(duration);
 }
 exports.computePerformanceResourceDuration = computePerformanceResourceDuration;
 function computePerformanceResourceDetails(entry) {
@@ -118,7 +118,8 @@ function toValidEntry(entry) {
     if (!areInOrder(entry.startTime, redirectStart, redirectEnd, entry.fetchStart)) {
         return undefined;
     }
-    return (0, tslib_1.__assign)((0, tslib_1.__assign)({}, entry), { redirectEnd: redirectEnd, redirectStart: redirectStart });
+    return tslib_1.__assign(tslib_1.__assign({}, entry), { redirectEnd: redirectEnd,
+        redirectStart: redirectStart });
 }
 exports.toValidEntry = toValidEntry;
 function hasRedirection(entry) {
@@ -127,8 +128,8 @@ function hasRedirection(entry) {
 }
 function formatTiming(origin, start, end) {
     return {
-        duration: (0, browser_core_1.toServerDuration)((0, browser_core_1.elapsed)(start, end)),
-        start: (0, browser_core_1.toServerDuration)((0, browser_core_1.elapsed)(origin, start)),
+        duration: browser_core_1.toServerDuration(browser_core_1.elapsed(start, end)),
+        start: browser_core_1.toServerDuration(browser_core_1.elapsed(origin, start)),
     };
 }
 function computeSize(entry) {

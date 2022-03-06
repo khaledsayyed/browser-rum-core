@@ -75,6 +75,10 @@ export function trackViews(location, lifeCycle, domMutationObservable, locationC
             stopViewLifeCycle();
             currentView.end();
         },
+        stopView: function () {
+            currentView.end();
+            currentView.triggerUpdate();
+        }
     };
 }
 function newView(lifeCycle, domMutationObservable, initialLocation, loadingType, startClocks, name) {
@@ -97,7 +101,14 @@ function newView(lifeCycle, domMutationObservable, initialLocation, loadingType,
     function triggerViewUpdate() {
         documentVersion += 1;
         var currentEnd = endClocks === undefined ? timeStampNow() : endClocks.timeStamp;
-        lifeCycle.notify(LifeCycleEventType.VIEW_UPDATED, __assign(__assign({}, viewMetrics), { customTimings: customTimings, documentVersion: documentVersion, id: id, name: name, loadingType: loadingType, location: location, startClocks: startClocks, timings: timings, duration: elapsed(startClocks.timeStamp, currentEnd), isActive: endClocks === undefined }));
+        lifeCycle.notify(LifeCycleEventType.VIEW_UPDATED, __assign(__assign({}, viewMetrics), { customTimings: customTimings,
+            documentVersion: documentVersion,
+            id: id,
+            name: name,
+            loadingType: loadingType,
+            location: location,
+            startClocks: startClocks,
+            timings: timings, duration: elapsed(startClocks.timeStamp, currentEnd), isActive: endClocks === undefined }));
     }
     return {
         name: name,
@@ -131,7 +142,7 @@ function newView(lifeCycle, domMutationObservable, initialLocation, loadingType,
 function sanitizeTiming(name) {
     var sanitized = name.replace(/[^a-zA-Z0-9-_.@$]/g, '_');
     if (sanitized !== name) {
-        display.warn("Invalid timing name: ".concat(name, ", sanitized to: ").concat(sanitized));
+        display.warn("Invalid timing name: " + name + ", sanitized to: " + sanitized);
     }
     return sanitized;
 }

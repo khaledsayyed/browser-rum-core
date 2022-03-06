@@ -13,12 +13,12 @@ function startLongTaskCollection(lifeCycle, sessionManager) {
         if (!session || session.hasLitePlan) {
             return;
         }
-        var startClocks = (0, browser_core_1.relativeToClocks)(entry.startTime);
+        var startClocks = browser_core_1.relativeToClocks(entry.startTime);
         var rawRumEvent = {
             date: startClocks.timeStamp,
             long_task: {
-                id: (0, browser_core_1.generateUUID)(),
-                duration: (0, browser_core_1.toServerDuration)(entry.duration),
+                id: browser_core_1.generateUUID(),
+                duration: browser_core_1.toServerDuration(entry.duration),
             },
             type: rawRumEvent_types_1.RumEventType.LONG_TASK,
         };

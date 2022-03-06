@@ -7,8 +7,8 @@ var rawRumEvent_types_1 = require("../../../rawRumEvent.types");
 var lifeCycle_1 = require("../../lifeCycle");
 function startErrorCollection(lifeCycle, foregroundContexts) {
     var errorObservable = new browser_core_1.Observable();
-    (0, browser_core_1.trackConsoleError)(errorObservable);
-    (0, browser_core_1.trackRuntimeError)(errorObservable);
+    browser_core_1.trackConsoleError(errorObservable);
+    browser_core_1.trackRuntimeError(errorObservable);
     errorObservable.subscribe(function (error) { return lifeCycle.notify(lifeCycle_1.LifeCycleEventType.RAW_ERROR_COLLECTED, { error: error }); });
     return doStartErrorCollection(lifeCycle, foregroundContexts);
 }
@@ -16,7 +16,8 @@ exports.startErrorCollection = startErrorCollection;
 function doStartErrorCollection(lifeCycle, foregroundContexts) {
     lifeCycle.subscribe(lifeCycle_1.LifeCycleEventType.RAW_ERROR_COLLECTED, function (_a) {
         var error = _a.error, customerContext = _a.customerContext, savedCommonContext = _a.savedCommonContext;
-        lifeCycle.notify(lifeCycle_1.LifeCycleEventType.RAW_RUM_EVENT_COLLECTED, (0, tslib_1.__assign)({ customerContext: customerContext, savedCommonContext: savedCommonContext }, processError(error, foregroundContexts)));
+        lifeCycle.notify(lifeCycle_1.LifeCycleEventType.RAW_RUM_EVENT_COLLECTED, tslib_1.__assign({ customerContext: customerContext,
+            savedCommonContext: savedCommonContext }, processError(error, foregroundContexts)));
     });
     return {
         addError: function (_a, savedCommonContext) {
@@ -32,14 +33,14 @@ function doStartErrorCollection(lifeCycle, foregroundContexts) {
 }
 exports.doStartErrorCollection = doStartErrorCollection;
 function computeRawError(error, handlingStack, startClocks) {
-    var stackTrace = error instanceof Error ? (0, browser_core_1.computeStackTrace)(error) : undefined;
-    return (0, tslib_1.__assign)((0, tslib_1.__assign)({ startClocks: startClocks, source: browser_core_1.ErrorSource.CUSTOM, originalError: error }, (0, browser_core_1.formatUnknownError)(stackTrace, error, 'Provided', handlingStack)), { handling: browser_core_1.ErrorHandling.HANDLED });
+    var stackTrace = error instanceof Error ? browser_core_1.computeStackTrace(error) : undefined;
+    return tslib_1.__assign(tslib_1.__assign({ startClocks: startClocks, source: browser_core_1.ErrorSource.CUSTOM, originalError: error }, browser_core_1.formatUnknownError(stackTrace, error, 'Provided', handlingStack)), { handling: browser_core_1.ErrorHandling.HANDLED });
 }
 function processError(error, foregroundContexts) {
     var rawRumEvent = {
         date: error.startClocks.timeStamp,
         error: {
-            id: (0, browser_core_1.generateUUID)(),
+            id: browser_core_1.generateUUID(),
             message: error.message,
             resource: error.resource
                 ? {

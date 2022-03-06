@@ -41,7 +41,7 @@ function startTracer(configuration, sessionManager) {
                     });
                 }
                 else {
-                    context.init = (0, tslib_1.__assign)({}, context.init);
+                    context.init = tslib_1.__assign({}, context.init);
                     var headers_1 = [];
                     if (context.init.headers instanceof Headers) {
                         context.init.headers.forEach(function (value, key) {
@@ -58,7 +58,7 @@ function startTracer(configuration, sessionManager) {
                             headers_1.push([key, context.init.headers[key]]);
                         });
                     }
-                    context.init.headers = headers_1.concat((0, browser_core_1.objectEntries)(tracingHeaders));
+                    context.init.headers = headers_1.concat(browser_core_1.objectEntries(tracingHeaders));
                 }
             });
         },
@@ -81,7 +81,7 @@ function injectHeadersIfTracingAllowed(configuration, context, sessionManager, i
     inject(makeTracingHeaders(context.traceId, context.spanId));
 }
 function isAllowedUrl(configuration, requestUrl) {
-    var requestOrigin = (0, browser_core_1.getOrigin)(requestUrl);
+    var requestOrigin = browser_core_1.getOrigin(requestUrl);
     for (var _i = 0, _a = configuration.allowedTracingOrigins; _i < _a.length; _i++) {
         var allowedOrigin = _a[_i];
         if (requestOrigin === allowedOrigin || (allowedOrigin instanceof RegExp && allowedOrigin.test(requestOrigin))) {

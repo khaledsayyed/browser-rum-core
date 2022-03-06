@@ -16,11 +16,11 @@ function trackActions(lifeCycle, domMutationObservable, _a) {
     lifeCycle.subscribe(lifeCycle_1.LifeCycleEventType.VIEW_CREATED, function () {
         action.discardCurrent();
     });
-    var stopListener = (0, browser_core_1.addEventListener)(window, "click" /* CLICK */, function (event) {
+    var stopListener = browser_core_1.addEventListener(window, "click" /* CLICK */, function (event) {
         if (!(event.target instanceof Element)) {
             return;
         }
-        var name = (0, getActionNameFromElement_1.getActionNameFromElement)(event.target, actionNameAttribute);
+        var name = getActionNameFromElement_1.getActionNameFromElement(event.target, actionNameAttribute);
         if (!name) {
             return;
         }
@@ -45,7 +45,7 @@ function startActionManagement(lifeCycle, domMutationObservable) {
             }
             var pendingAutoAction = new PendingAutoAction(lifeCycle, type, name, event);
             currentAction = pendingAutoAction;
-            (stopWaitingIdlePage = (0, waitIdlePage_1.waitIdlePage)(lifeCycle, domMutationObservable, function (event) {
+            (stopWaitingIdlePage = waitIdlePage_1.waitIdlePage(lifeCycle, domMutationObservable, function (event) {
                 if (event.hadActivity && event.duration >= 0) {
                     pendingAutoAction.complete(event.duration);
                 }
@@ -70,9 +70,9 @@ var PendingAutoAction = /** @class */ (function () {
         this.type = type;
         this.name = name;
         this.event = event;
-        this.id = (0, browser_core_1.generateUUID)();
-        this.startClocks = (0, browser_core_1.clocksNow)();
-        this.eventCountsSubscription = (0, trackEventCounts_1.trackEventCounts)(lifeCycle);
+        this.id = browser_core_1.generateUUID();
+        this.startClocks = browser_core_1.clocksNow();
+        this.eventCountsSubscription = trackEventCounts_1.trackEventCounts(lifeCycle);
         this.lifeCycle.notify(lifeCycle_1.LifeCycleEventType.AUTO_ACTION_CREATED, { id: this.id, startClocks: this.startClocks });
     }
     PendingAutoAction.prototype.complete = function (duration) {

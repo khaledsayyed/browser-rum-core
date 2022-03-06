@@ -81,7 +81,7 @@ export function makeRumPublicApi(startRumImpl, recorderApi, _a) {
             context: globalContextManager.get(),
             hasReplay: recorderApi.isRecording() ? true : undefined,
         }); }, recorderApi, initialViewName);
-        (startViewStrategy = startRumResults.startView, stopViewStrategy = startRumResults.stopView, addActionStrategy = startRumResults.addAction, addErrorStrategy = startRumResults.addError, addTimingStrategy = startRumResults.addTiming, getInternalContextStrategy = startRumResults.getInternalContext);
+        (startViewStrategy = startRumResults.startView, addActionStrategy = startRumResults.addAction, addErrorStrategy = startRumResults.addError, addTimingStrategy = startRumResults.addTiming, getInternalContextStrategy = startRumResults.getInternalContext, stopViewStrategy = startRumResults.stopView);
         bufferApiCalls.drain();
         recorderApi.onRumStart(startRumResults.lifeCycle, configuration, startRumResults.session, startRumResults.parentContexts);
     }
@@ -130,7 +130,9 @@ export function makeRumPublicApi(startRumImpl, recorderApi, _a) {
         startView: monitor(function (name) {
             startViewStrategy(name);
         }),
-        stopView: monitor(function () { stopViewStrategy(); }),
+        stopView: monitor(function () {
+            stopViewStrategy();
+        }),
         startSessionReplayRecording: monitor(recorderApi.start),
         stopSessionReplayRecording: monitor(recorderApi.stop),
     });

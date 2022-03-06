@@ -147,6 +147,10 @@ export function trackViews(
       stopViewLifeCycle()
       currentView.end()
     },
+    stopView: () => {
+      currentView.end()
+      currentView.triggerUpdate();
+    }
   }
 }
 

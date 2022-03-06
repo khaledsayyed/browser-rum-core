@@ -29,7 +29,7 @@ function startUrlContexts(lifeCycle, locationChangeObservable, location) {
         var newLocation = _a.newLocation;
         var current = urlContextHistory.getCurrent();
         if (current) {
-            var changeTime = (0, browser_core_1.relativeNow)();
+            var changeTime = browser_core_1.relativeNow();
             urlContextHistory.closeCurrent(changeTime);
             urlContextHistory.setCurrent(buildUrlContext({
                 url: newLocation.href,

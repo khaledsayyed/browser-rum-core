@@ -29,7 +29,7 @@ function addNewForegroundPeriod() {
         return;
     }
     var currentForegroundPeriod = foregroundPeriods[foregroundPeriods.length - 1];
-    var now = (0, browser_core_1.relativeNow)();
+    var now = browser_core_1.relativeNow();
     if (currentForegroundPeriod !== undefined && currentForegroundPeriod.end === undefined) {
         return;
     }
@@ -43,7 +43,7 @@ function closeForegroundPeriod() {
         return;
     }
     var currentForegroundPeriod = foregroundPeriods[foregroundPeriods.length - 1];
-    var now = (0, browser_core_1.relativeNow)();
+    var now = browser_core_1.relativeNow();
     if (currentForegroundPeriod.end !== undefined) {
         return;
     }
@@ -51,7 +51,7 @@ function closeForegroundPeriod() {
 }
 exports.closeForegroundPeriod = closeForegroundPeriod;
 function trackFocus(onFocusChange) {
-    return (0, browser_core_1.addEventListener)(window, "focus" /* FOCUS */, function (event) {
+    return browser_core_1.addEventListener(window, "focus" /* FOCUS */, function (event) {
         if (!event.isTrusted) {
             return;
         }
@@ -59,7 +59,7 @@ function trackFocus(onFocusChange) {
     });
 }
 function trackBlur(onBlurChange) {
-    return (0, browser_core_1.addEventListener)(window, "blur" /* BLUR */, function (event) {
+    return browser_core_1.addEventListener(window, "blur" /* BLUR */, function (event) {
         if (!event.isTrusted) {
             return;
         }
@@ -97,12 +97,12 @@ function selectInForegroundPeriodsFor(eventStartTime, duration) {
             continue;
         }
         var startTime = eventStartTime > foregroundPeriod.start ? eventStartTime : foregroundPeriod.start;
-        var startDuration = (0, browser_core_1.elapsed)(eventStartTime, startTime);
+        var startDuration = browser_core_1.elapsed(eventStartTime, startTime);
         var endTime = foregroundPeriod.end === undefined || eventEndTime < foregroundPeriod.end ? eventEndTime : foregroundPeriod.end;
-        var endDuration = (0, browser_core_1.elapsed)(startTime, endTime);
+        var endDuration = browser_core_1.elapsed(startTime, endTime);
         filteredForegroundPeriods.unshift({
-            start: (0, browser_core_1.toServerDuration)(startDuration),
-            duration: (0, browser_core_1.toServerDuration)(endDuration),
+            start: browser_core_1.toServerDuration(startDuration),
+            duration: browser_core_1.toServerDuration(endDuration),
         });
     }
     return filteredForegroundPeriods;

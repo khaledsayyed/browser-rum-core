@@ -11,11 +11,11 @@ function startActionCollection(lifeCycle, domMutationObservable, configuration, 
         return lifeCycle.notify(lifeCycle_1.LifeCycleEventType.RAW_RUM_EVENT_COLLECTED, processAction(action, foregroundContexts));
     });
     if (configuration.trackInteractions) {
-        (0, trackActions_1.trackActions)(lifeCycle, domMutationObservable, configuration);
+        trackActions_1.trackActions(lifeCycle, domMutationObservable, configuration);
     }
     return {
         addAction: function (action, savedCommonContext) {
-            lifeCycle.notify(lifeCycle_1.LifeCycleEventType.RAW_RUM_EVENT_COLLECTED, (0, tslib_1.__assign)({ savedCommonContext: savedCommonContext }, processAction(action, foregroundContexts)));
+            lifeCycle.notify(lifeCycle_1.LifeCycleEventType.RAW_RUM_EVENT_COLLECTED, tslib_1.__assign({ savedCommonContext: savedCommonContext }, processAction(action, foregroundContexts)));
         },
     };
 }
@@ -28,7 +28,7 @@ function processAction(action, foregroundContexts) {
                     count: action.counts.errorCount,
                 },
                 id: action.id,
-                loading_time: (0, browser_core_1.toServerDuration)(action.duration),
+                loading_time: browser_core_1.toServerDuration(action.duration),
                 long_task: {
                     count: action.counts.longTaskCount,
                 },
@@ -39,9 +39,9 @@ function processAction(action, foregroundContexts) {
         }
         : undefined;
     var customerContext = !isAutoAction(action) ? action.context : undefined;
-    var actionEvent = (0, browser_core_1.combine)({
+    var actionEvent = browser_core_1.combine({
         action: {
-            id: (0, browser_core_1.generateUUID)(),
+            id: browser_core_1.generateUUID(),
             target: {
                 name: action.name,
             },

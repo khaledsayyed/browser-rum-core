@@ -34,7 +34,7 @@ export function startRum(configuration, internalMonitoring, getCommonContext, re
     var _a = startRumEventCollection(lifeCycle, configuration, location, session, locationChangeObservable, getCommonContext), parentContexts = _a.parentContexts, foregroundContexts = _a.foregroundContexts, urlContexts = _a.urlContexts;
     startLongTaskCollection(lifeCycle, session);
     startResourceCollection(lifeCycle);
-    var _b = startViewCollection(lifeCycle, configuration, location, domMutationObservable, locationChangeObservable, foregroundContexts, recorderApi, initialViewName), addTiming = _b.addTiming, startView = _b.startView, stopView = _b.stop;
+    var _b = startViewCollection(lifeCycle, configuration, location, domMutationObservable, locationChangeObservable, foregroundContexts, recorderApi, initialViewName), addTiming = _b.addTiming, startView = _b.startView, stopView = _b.stopView;
     var addError = startErrorCollection(lifeCycle, foregroundContexts).addError;
     var addAction = startActionCollection(lifeCycle, domMutationObservable, configuration, foregroundContexts).addAction;
     startRequestCollection(lifeCycle, configuration, session);
@@ -45,11 +45,11 @@ export function startRum(configuration, internalMonitoring, getCommonContext, re
         addError: addError,
         addTiming: addTiming,
         startView: startView,
-        stopView: stopView,
         lifeCycle: lifeCycle,
         parentContexts: parentContexts,
         session: session,
         getInternalContext: internalContext.get,
+        stopView: stopView
     };
 }
 export function startRumEventCollection(lifeCycle, configuration, location, sessionManager, locationChangeObservable, getCommonContext) {

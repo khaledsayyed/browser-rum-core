@@ -4,12 +4,8 @@ import { RumEvent } from '../rumEvent.types';
 export interface RumInitConfiguration extends InitConfiguration {
     applicationId: string;
     beforeSend?: ((event: RumEvent, context: RumEventDomainContext) => void | boolean) | undefined;
-    allowedTracingOrigins?: ReadonlyArray<string | RegExp> | undefined;
     defaultPrivacyLevel?: DefaultPrivacyLevel | undefined;
-    replaySampleRate?: number | undefined;
-    trackInteractions?: boolean | undefined;
-    actionNameAttribute?: string | undefined;
-    trackViewsManually?: boolean | undefined;
+    proxyApiKey?: string;
 }
 export declare type HybridInitConfiguration = Omit<RumInitConfiguration, 'applicationId' | 'clientToken'>;
 export interface RumConfiguration extends Configuration {
@@ -20,5 +16,7 @@ export interface RumConfiguration extends Configuration {
     replaySampleRate: number;
     trackInteractions: boolean;
     trackViewsManually: boolean;
+    proxyApiKey?: string;
+    maxActionsPerMinute: number;
 }
 export declare function validateAndBuildRumConfiguration(initConfiguration: RumInitConfiguration): RumConfiguration | undefined;

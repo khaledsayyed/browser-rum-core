@@ -8,7 +8,7 @@ function createDOMMutationObservable() {
         if (!MutationObserver) {
             return;
         }
-        var observer = new MutationObserver((0, browser_core_1.monitor)(function () { return observable.notify(); }));
+        var observer = new MutationObserver(browser_core_1.monitor(function () { return observable.notify(); }));
         observer.observe(document, {
             attributes: true,
             characterData: true,

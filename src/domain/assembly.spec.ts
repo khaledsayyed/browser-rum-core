@@ -12,8 +12,6 @@ import { createRawRumEvent } from '../../test/fixtures'
 import {
   cleanupSyntheticsWorkerValues,
   mockSyntheticsWorkerValues,
-  mockCiVisibilityWindowValues,
-  cleanupCiVisibilityWindowValues,
   setup,
   TestSetupBuilder,
 } from '../../test/specHelper'
@@ -62,7 +60,6 @@ describe('rum assembly', () => {
     deleteEventBridgeStub()
     setupBuilder.cleanup()
     cleanupSyntheticsWorkerValues()
-    cleanupCiVisibilityWindowValues()
   })
 
   describe('beforeSend', () => {
@@ -529,17 +526,6 @@ describe('rum assembly', () => {
       expect(serverRumEvents[0].session.type).toEqual('synthetics')
     })
 
-    it('should detect ci visibility tests based on ci visibility global window values', () => {
-      mockCiVisibilityWindowValues('traceId')
-
-      const { lifeCycle } = setupBuilder.build()
-      notifyRawRumEvent(lifeCycle, {
-        rawRumEvent: createRawRumEvent(RumEventType.VIEW),
-      })
-
-      expect(serverRumEvents[0].session.type).toEqual('ci_test')
-    })
-
     it('should set the session.has_replay attribute if it is defined in the common context', () => {
       const { lifeCycle } = setupBuilder.build()
       commonContext.hasReplay = true
@@ -589,19 +575,6 @@ describe('rum assembly', () => {
     })
   })
 
-  describe('ci visibility context', () => {
-    it('includes the ci visibility context', () => {
-      mockCiVisibilityWindowValues('traceId')
-
-      const { lifeCycle } = setupBuilder.build()
-      notifyRawRumEvent(lifeCycle, {
-        rawRumEvent: createRawRumEvent(RumEventType.VIEW),
-      })
-
-      expect(serverRumEvents[0].ci_test).toBeTruthy()
-    })
-  })
-
   describe('error events limitation', () => {
     const notifiedRawErrors: RawError[] = []
 
@@ -613,7 +586,7 @@ describe('rum assembly', () => {
     })
 
     it('stops sending error events when reaching the limit', () => {
-      const { lifeCycle } = setupBuilder.withConfiguration({ eventRateLimiterThreshold: 1 }).build()
+      const { lifeCycle } = setupBuilder.withConfiguration({ maxErrorsPerMinute: 1 }).build()
       notifyRawRumErrorEvent(lifeCycle, 'foo')
       notifyRawRumErrorEvent(lifeCycle, 'bar')
 
@@ -631,7 +604,7 @@ describe('rum assembly', () => {
     it('does not take discarded errors into account', () => {
       const { lifeCycle } = setupBuilder
         .withConfiguration({
-          eventRateLimiterThreshold: 1,
+          maxErrorsPerMinute: 1,
           beforeSend: (event) => {
             if (event.type === RumEventType.ERROR && (event as RumErrorEvent).error.message === 'discard me') {
               return false
@@ -649,10 +622,7 @@ describe('rum assembly', () => {
     })
 
     it('allows to send new errors after a minute', () => {
-      const { lifeCycle, clock } = setupBuilder
-        .withFakeClock()
-        .withConfiguration({ eventRateLimiterThreshold: 1 })
-        .build()
+      const { lifeCycle, clock } = setupBuilder.withFakeClock().withConfiguration({ maxErrorsPerMinute: 1 }).build()
       notifyRawRumErrorEvent(lifeCycle, 'foo')
       notifyRawRumErrorEvent(lifeCycle, 'bar')
       clock.tick(ONE_MINUTE)
@@ -683,7 +653,7 @@ describe('rum assembly', () => {
     })
 
     it('stops sending action events when reaching the limit', () => {
-      const { lifeCycle } = setupBuilder.withConfiguration({ eventRateLimiterThreshold: 1 }).build()
+      const { lifeCycle } = setupBuilder.withConfiguration({ maxActionsPerMinute: 1 }).build()
 
       notifyRumActionEvent(lifeCycle, 'foo')
       notifyRumActionEvent(lifeCycle, 'bar')
@@ -702,7 +672,7 @@ describe('rum assembly', () => {
     it('does not take discarded actions into account', () => {
       const { lifeCycle } = setupBuilder
         .withConfiguration({
-          eventRateLimiterThreshold: 1,
+          maxErrorsPerMinute: 1,
           beforeSend: (event) => {
             if (event.type === RumEventType.ACTION && (event as RumActionEvent).action.target?.name === 'discard me') {
               return false
@@ -720,10 +690,7 @@ describe('rum assembly', () => {
     })
 
     it('allows to send new actions after a minute', () => {
-      const { lifeCycle, clock } = setupBuilder
-        .withFakeClock()
-        .withConfiguration({ eventRateLimiterThreshold: 1 })
-        .build()
+      const { lifeCycle, clock } = setupBuilder.withFakeClock().withConfiguration({ maxActionsPerMinute: 1 }).build()
       notifyRumActionEvent(lifeCycle, 'foo')
       notifyRumActionEvent(lifeCycle, 'bar')
       clock.tick(ONE_MINUTE)

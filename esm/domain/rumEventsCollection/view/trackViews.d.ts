@@ -33,4 +33,5 @@ export declare function trackViews(location: Location, lifeCycle: LifeCycle, dom
     addTiming: (name: string, time?: RelativeTime | TimeStamp) => void;
     startView: (name?: string | undefined, startClocks?: ClocksState | undefined) => void;
     stop: () => void;
+    stopView: () => void;
 };

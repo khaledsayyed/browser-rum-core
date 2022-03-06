@@ -11,7 +11,7 @@ exports.TIMING_MAXIMUM_DELAY = 10 * browser_core_1.ONE_MINUTE;
 function trackInitialViewTimings(lifeCycle, callback) {
     var timings;
     function setTimings(newTimings) {
-        timings = (0, tslib_1.__assign)((0, tslib_1.__assign)({}, timings), newTimings);
+        timings = tslib_1.__assign(tslib_1.__assign({}, timings), newTimings);
         callback(timings);
     }
     var stopNavigationTracking = trackNavigationTimings(lifeCycle, setTimings).stop;
@@ -55,7 +55,7 @@ function trackNavigationTimings(lifeCycle, callback) {
 }
 exports.trackNavigationTimings = trackNavigationTimings;
 function trackFirstContentfulPaintTiming(lifeCycle, callback) {
-    var firstHidden = (0, trackFirstHidden_1.trackFirstHidden)();
+    var firstHidden = trackFirstHidden_1.trackFirstHidden();
     var stop = lifeCycle.subscribe(lifeCycle_1.LifeCycleEventType.PERFORMANCE_ENTRY_COLLECTED, function (entry) {
         if (entry.entryType === 'paint' &&
             entry.name === 'first-contentful-paint' &&
@@ -74,12 +74,12 @@ exports.trackFirstContentfulPaintTiming = trackFirstContentfulPaintTiming;
  * Reference implementation: https://github.com/GoogleChrome/web-vitals/blob/master/src/getLCP.ts
  */
 function trackLargestContentfulPaintTiming(lifeCycle, emitter, callback) {
-    var firstHidden = (0, trackFirstHidden_1.trackFirstHidden)();
+    var firstHidden = trackFirstHidden_1.trackFirstHidden();
     // Ignore entries that come after the first user interaction.  According to the documentation, the
     // browser should not send largest-contentful-paint entries after a user interact with the page,
     // but the web-vitals reference implementation uses this as a safeguard.
     var firstInteractionTimestamp = Infinity;
-    var stopEventListener = (0, browser_core_1.addEventListeners)(emitter, ["pointerdown" /* POINTER_DOWN */, "keydown" /* KEY_DOWN */], function (event) {
+    var stopEventListener = browser_core_1.addEventListeners(emitter, ["pointerdown" /* POINTER_DOWN */, "keydown" /* KEY_DOWN */], function (event) {
         firstInteractionTimestamp = event.timeStamp;
     }, { capture: true, once: true }).stop;
     var unsubscribeLifeCycle = lifeCycle.subscribe(lifeCycle_1.LifeCycleEventType.PERFORMANCE_ENTRY_COLLECTED, function (entry) {
@@ -107,10 +107,10 @@ exports.trackLargestContentfulPaintTiming = trackLargestContentfulPaintTiming;
  * Reference implementation: https://github.com/GoogleChrome/web-vitals/blob/master/src/getFID.ts
  */
 function trackFirstInputTimings(lifeCycle, callback) {
-    var firstHidden = (0, trackFirstHidden_1.trackFirstHidden)();
+    var firstHidden = trackFirstHidden_1.trackFirstHidden();
     var stop = lifeCycle.subscribe(lifeCycle_1.LifeCycleEventType.PERFORMANCE_ENTRY_COLLECTED, function (entry) {
         if (entry.entryType === 'first-input' && entry.startTime < firstHidden.timeStamp) {
-            var firstInputDelay = (0, browser_core_1.elapsed)(entry.startTime, entry.processingStart);
+            var firstInputDelay = browser_core_1.elapsed(entry.startTime, entry.processingStart);
             callback({
                 // Ensure firstInputDelay to be positive, see
                 // https://bugs.chromium.org/p/chromium/issues/detail?id=1185815

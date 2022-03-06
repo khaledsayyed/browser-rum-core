@@ -1,16 +1,14 @@
-import { __spreadArray } from "tslib";
+import { __spreadArrays } from "tslib";
 import { combine, isEmptyObject, limitModification, timeStampNow, currentDrift, display, createEventRateLimiter, canUseEventBridge, } from '@datadog/browser-core';
 import { RumEventType, } from '../rawRumEvent.types';
 import { buildEnv } from '../boot/buildEnv';
 import { getSyntheticsContext } from './syntheticsContext';
-import { getCiTestContext } from './ciTestContext';
 import { LifeCycleEventType } from './lifeCycle';
 import { RumSessionPlan } from './rumSessionManager';
 var SessionType;
 (function (SessionType) {
     SessionType["SYNTHETICS"] = "synthetics";
     SessionType["USER"] = "user";
-    SessionType["CI_TEST"] = "ci_test";
 })(SessionType || (SessionType = {}));
 var VIEW_EVENTS_MODIFIABLE_FIELD_PATHS = [
     // Fields with sensitive data
@@ -22,21 +20,20 @@ var VIEW_EVENTS_MODIFIABLE_FIELD_PATHS = [
     'error.resource.url',
     'resource.url',
 ];
-var OTHER_EVENTS_MODIFIABLE_FIELD_PATHS = __spreadArray(__spreadArray([], VIEW_EVENTS_MODIFIABLE_FIELD_PATHS, true), [
+var OTHER_EVENTS_MODIFIABLE_FIELD_PATHS = __spreadArrays(VIEW_EVENTS_MODIFIABLE_FIELD_PATHS, [
     // User-customizable field
     'context',
-], false);
+]);
 export function startRumAssembly(configuration, lifeCycle, sessionManager, parentContexts, urlContexts, getCommonContext) {
     var _a;
     var reportError = function (error) {
         lifeCycle.notify(LifeCycleEventType.RAW_ERROR_COLLECTED, { error: error });
     };
     var eventRateLimiters = (_a = {},
-        _a[RumEventType.ERROR] = createEventRateLimiter(RumEventType.ERROR, configuration.eventRateLimiterThreshold, reportError),
-        _a[RumEventType.ACTION] = createEventRateLimiter(RumEventType.ACTION, configuration.eventRateLimiterThreshold, reportError),
+        _a[RumEventType.ERROR] = createEventRateLimiter(RumEventType.ERROR, configuration.maxErrorsPerMinute, reportError),
+        _a[RumEventType.ACTION] = createEventRateLimiter(RumEventType.ACTION, configuration.maxActionsPerMinute, reportError),
         _a);
     var syntheticsContext = getSyntheticsContext();
-    var ciTestContext = getCiTestContext();
     lifeCycle.subscribe(LifeCycleEventType.RAW_RUM_EVENT_COLLECTED, function (_a) {
         var startTime = _a.startTime, rawRumEvent = _a.rawRumEvent, domainContext = _a.domainContext, savedCommonContext = _a.savedCommonContext, customerContext = _a.customerContext;
         var viewContext = parentContexts.findView(startTime);
@@ -64,10 +61,9 @@ export function startRumAssembly(configuration, lifeCycle, sessionManager, paren
                 service: configuration.service,
                 session: {
                     id: session.id,
-                    type: syntheticsContext ? SessionType.SYNTHETICS : ciTestContext ? SessionType.CI_TEST : SessionType.USER,
+                    type: syntheticsContext ? SessionType.SYNTHETICS : SessionType.USER,
                 },
                 synthetics: syntheticsContext,
-                ci_test: ciTestContext,
             };
             var serverRumEvent = (needToAssembleWithAction(rawRumEvent)
                 ? combine(rumContext, urlContext, viewContext, actionContext, rawRumEvent)

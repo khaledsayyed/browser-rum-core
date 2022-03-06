@@ -6,6 +6,7 @@ import {
   timeStampNow,
   currentDrift,
   display,
+  BeforeSendCallback,
   RawError,
   createEventRateLimiter,
   EventRateLimiter,
@@ -25,7 +26,6 @@ import {
 import { RumEvent } from '../rumEvent.types'
 import { buildEnv } from '../boot/buildEnv'
 import { getSyntheticsContext } from './syntheticsContext'
-import { getCiTestContext } from './ciTestContext'
 import { LifeCycle, LifeCycleEventType } from './lifeCycle'
 import { ParentContexts } from './parentContexts'
 import { RumSessionManager, RumSessionPlan } from './rumSessionManager'
@@ -35,7 +35,6 @@ import { RumConfiguration } from './configuration'
 enum SessionType {
   SYNTHETICS = 'synthetics',
   USER = 'user',
-  CI_TEST = 'ci_test',
 }
 
 const VIEW_EVENTS_MODIFIABLE_FIELD_PATHS = [
@@ -70,20 +69,11 @@ export function startRumAssembly(
   }
 
   const eventRateLimiters = {
-    [RumEventType.ERROR]: createEventRateLimiter(
-      RumEventType.ERROR,
-      configuration.eventRateLimiterThreshold,
-      reportError
-    ),
-    [RumEventType.ACTION]: createEventRateLimiter(
-      RumEventType.ACTION,
-      configuration.eventRateLimiterThreshold,
-      reportError
-    ),
+    [RumEventType.ERROR]: createEventRateLimiter(RumEventType.ERROR, configuration.maxErrorsPerMinute, reportError),
+    [RumEventType.ACTION]: createEventRateLimiter(RumEventType.ACTION, configuration.maxActionsPerMinute, reportError),
   }
 
   const syntheticsContext = getSyntheticsContext()
-  const ciTestContext = getCiTestContext()
 
   lifeCycle.subscribe(
     LifeCycleEventType.RAW_RUM_EVENT_COLLECTED,
@@ -113,10 +103,9 @@ export function startRumAssembly(
           service: configuration.service,
           session: {
             id: session.id,
-            type: syntheticsContext ? SessionType.SYNTHETICS : ciTestContext ? SessionType.CI_TEST : SessionType.USER,
+            type: syntheticsContext ? SessionType.SYNTHETICS : SessionType.USER,
           },
           synthetics: syntheticsContext,
-          ci_test: ciTestContext,
         }
         const serverRumEvent = (needToAssembleWithAction(rawRumEvent)
           ? combine(rumContext, urlContext, viewContext, actionContext, rawRumEvent)
@@ -145,7 +134,7 @@ export function startRumAssembly(
 
 function shouldSend(
   event: RumEvent & Context,
-  beforeSend: RumConfiguration['beforeSend'],
+  beforeSend: BeforeSendCallback | undefined,
   domainContext: RumEventDomainContext,
   eventRateLimiters: { [key in RumEventType]?: EventRateLimiter }
 ) {

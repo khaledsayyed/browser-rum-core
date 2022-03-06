@@ -157,11 +157,11 @@ export function makeRumPublicApi(
 
     ;({
       startView: startViewStrategy,
-      stopView: stopViewStrategy,
       addAction: addActionStrategy,
       addError: addErrorStrategy,
       addTiming: addTimingStrategy,
       getInternalContext: getInternalContextStrategy,
+      stopView: stopViewStrategy
     } = startRumResults)
     bufferApiCalls.drain()
 
@@ -228,7 +228,9 @@ export function makeRumPublicApi(
       startViewStrategy(name)
     }),
 
-    stopView: monitor(() => { stopViewStrategy() }),
+    stopView: monitor(() => {
+      stopViewStrategy()
+    }),
 
     startSessionReplayRecording: monitor(recorderApi.start),
     stopSessionReplayRecording: monitor(recorderApi.stop),

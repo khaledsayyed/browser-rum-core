@@ -18,8 +18,8 @@ function trackViews(location, lifeCycle, domMutationObservable, locationChangeOb
         locationChangeSubscription = renewViewOnLocationChange(locationChangeObservable);
     }
     function trackInitialView(name) {
-        var initialView = newView(lifeCycle, domMutationObservable, location, rawRumEvent_types_1.ViewLoadingType.INITIAL_LOAD, (0, browser_core_1.clocksOrigin)(), name);
-        var stop = (0, trackInitialViewTimings_1.trackInitialViewTimings)(lifeCycle, function (timings) {
+        var initialView = newView(lifeCycle, domMutationObservable, location, rawRumEvent_types_1.ViewLoadingType.INITIAL_LOAD, browser_core_1.clocksOrigin(), name);
+        var stop = trackInitialViewTimings_1.trackInitialViewTimings(lifeCycle, function (timings) {
             initialView.updateTimings(timings);
             initialView.scheduleUpdate();
         }).stop;
@@ -41,7 +41,7 @@ function trackViews(location, lifeCycle, domMutationObservable, locationChangeOb
             currentView.triggerUpdate();
         });
         // Session keep alive
-        var keepAliveInterval = window.setInterval((0, browser_core_1.monitor)(function () {
+        var keepAliveInterval = window.setInterval(browser_core_1.monitor(function () {
             currentView.triggerUpdate();
         }), exports.SESSION_KEEP_ALIVE_INTERVAL);
         return {
@@ -63,7 +63,7 @@ function trackViews(location, lifeCycle, domMutationObservable, locationChangeOb
     }
     return {
         addTiming: function (name, time) {
-            if (time === void 0) { time = (0, browser_core_1.timeStampNow)(); }
+            if (time === void 0) { time = browser_core_1.timeStampNow(); }
             currentView.addTiming(name, time);
             currentView.triggerUpdate();
         },
@@ -78,36 +78,47 @@ function trackViews(location, lifeCycle, domMutationObservable, locationChangeOb
             stopViewLifeCycle();
             currentView.end();
         },
+        stopView: function () {
+            currentView.end();
+            currentView.triggerUpdate();
+        }
     };
 }
 exports.trackViews = trackViews;
 function newView(lifeCycle, domMutationObservable, initialLocation, loadingType, startClocks, name) {
-    if (startClocks === void 0) { startClocks = (0, browser_core_1.clocksNow)(); }
+    if (startClocks === void 0) { startClocks = browser_core_1.clocksNow(); }
     // Setup initial values
-    var id = (0, browser_core_1.generateUUID)();
+    var id = browser_core_1.generateUUID();
     var timings = {};
     var customTimings = {};
     var documentVersion = 0;
     var endClocks;
-    var location = (0, tslib_1.__assign)({}, initialLocation);
+    var location = tslib_1.__assign({}, initialLocation);
     lifeCycle.notify(lifeCycle_1.LifeCycleEventType.VIEW_CREATED, { id: id, name: name, startClocks: startClocks });
     // Update the view every time the measures are changing
-    var _a = (0, browser_core_1.throttle)((0, browser_core_1.monitor)(triggerViewUpdate), exports.THROTTLE_VIEW_UPDATE_PERIOD, {
+    var _a = browser_core_1.throttle(browser_core_1.monitor(triggerViewUpdate), exports.THROTTLE_VIEW_UPDATE_PERIOD, {
         leading: false,
     }), scheduleViewUpdate = _a.throttled, cancelScheduleViewUpdate = _a.cancel;
-    var _b = (0, trackViewMetrics_1.trackViewMetrics)(lifeCycle, domMutationObservable, scheduleViewUpdate, loadingType), setLoadEvent = _b.setLoadEvent, stopViewMetricsTracking = _b.stop, viewMetrics = _b.viewMetrics;
+    var _b = trackViewMetrics_1.trackViewMetrics(lifeCycle, domMutationObservable, scheduleViewUpdate, loadingType), setLoadEvent = _b.setLoadEvent, stopViewMetricsTracking = _b.stop, viewMetrics = _b.viewMetrics;
     // Initial view update
     triggerViewUpdate();
     function triggerViewUpdate() {
         documentVersion += 1;
-        var currentEnd = endClocks === undefined ? (0, browser_core_1.timeStampNow)() : endClocks.timeStamp;
-        lifeCycle.notify(lifeCycle_1.LifeCycleEventType.VIEW_UPDATED, (0, tslib_1.__assign)((0, tslib_1.__assign)({}, viewMetrics), { customTimings: customTimings, documentVersion: documentVersion, id: id, name: name, loadingType: loadingType, location: location, startClocks: startClocks, timings: timings, duration: (0, browser_core_1.elapsed)(startClocks.timeStamp, currentEnd), isActive: endClocks === undefined }));
+        var currentEnd = endClocks === undefined ? browser_core_1.timeStampNow() : endClocks.timeStamp;
+        lifeCycle.notify(lifeCycle_1.LifeCycleEventType.VIEW_UPDATED, tslib_1.__assign(tslib_1.__assign({}, viewMetrics), { customTimings: customTimings,
+            documentVersion: documentVersion,
+            id: id,
+            name: name,
+            loadingType: loadingType,
+            location: location,
+            startClocks: startClocks,
+            timings: timings, duration: browser_core_1.elapsed(startClocks.timeStamp, currentEnd), isActive: endClocks === undefined }));
     }
     return {
         name: name,
         scheduleUpdate: scheduleViewUpdate,
         end: function (clocks) {
-            if (clocks === void 0) { clocks = (0, browser_core_1.clocksNow)(); }
+            if (clocks === void 0) { clocks = browser_core_1.clocksNow(); }
             endClocks = clocks;
             stopViewMetricsTracking();
             lifeCycle.notify(lifeCycle_1.LifeCycleEventType.VIEW_ENDED, { endClocks: endClocks });
@@ -124,7 +135,7 @@ function newView(lifeCycle, domMutationObservable, initialLocation, loadingType,
             }
         },
         addTiming: function (name, time) {
-            var relativeTime = (0, browser_core_1.looksLikeRelativeTime)(time) ? time : (0, browser_core_1.elapsed)(startClocks.timeStamp, time);
+            var relativeTime = browser_core_1.looksLikeRelativeTime(time) ? time : browser_core_1.elapsed(startClocks.timeStamp, time);
             customTimings[sanitizeTiming(name)] = relativeTime;
         },
     };
@@ -135,7 +146,7 @@ function newView(lifeCycle, domMutationObservable, initialLocation, loadingType,
 function sanitizeTiming(name) {
     var sanitized = name.replace(/[^a-zA-Z0-9-_.@$]/g, '_');
     if (sanitized !== name) {
-        browser_core_1.display.warn("Invalid timing name: ".concat(name, ", sanitized to: ").concat(sanitized));
+        browser_core_1.display.warn("Invalid timing name: " + name + ", sanitized to: " + sanitized);
     }
     return sanitized;
 }

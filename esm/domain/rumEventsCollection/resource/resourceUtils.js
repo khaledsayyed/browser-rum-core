@@ -25,7 +25,7 @@ var RESOURCE_TYPES = [
 export function computeResourceKind(timing) {
     var url = timing.name;
     if (!isValidUrl(url)) {
-        addMonitoringMessage("Failed to construct URL for \"".concat(timing.name, "\""));
+        addMonitoringMessage("Failed to construct URL for \"" + timing.name + "\"");
         return ResourceType.OTHER;
     }
     var path = getPathName(url);
@@ -111,7 +111,8 @@ export function toValidEntry(entry) {
     if (!areInOrder(entry.startTime, redirectStart, redirectEnd, entry.fetchStart)) {
         return undefined;
     }
-    return __assign(__assign({}, entry), { redirectEnd: redirectEnd, redirectStart: redirectStart });
+    return __assign(__assign({}, entry), { redirectEnd: redirectEnd,
+        redirectStart: redirectStart });
 }
 function hasRedirection(entry) {
     // The only time fetchStart is different than startTime is if a redirection occurred.

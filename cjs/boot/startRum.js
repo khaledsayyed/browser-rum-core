@@ -22,12 +22,12 @@ var urlContexts_1 = require("../domain/urlContexts");
 var locationChangeObservable_1 = require("../browser/locationChangeObservable");
 function startRum(configuration, internalMonitoring, getCommonContext, recorderApi, initialViewName) {
     var lifeCycle = new lifeCycle_1.LifeCycle();
-    var session = !(0, browser_core_1.canUseEventBridge)() ? (0, rumSessionManager_1.startRumSessionManager)(configuration, lifeCycle) : (0, rumSessionManager_1.startRumSessionManagerStub)();
-    var domMutationObservable = (0, domMutationObservable_1.createDOMMutationObservable)();
-    var locationChangeObservable = (0, locationChangeObservable_1.createLocationChangeObservable)(location);
+    var session = !browser_core_1.canUseEventBridge() ? rumSessionManager_1.startRumSessionManager(configuration, lifeCycle) : rumSessionManager_1.startRumSessionManagerStub();
+    var domMutationObservable = domMutationObservable_1.createDOMMutationObservable();
+    var locationChangeObservable = locationChangeObservable_1.createLocationChangeObservable(location);
     internalMonitoring.setExternalContextProvider(function () {
         var _a;
-        return (0, browser_core_1.combine)({
+        return browser_core_1.combine({
             application_id: configuration.applicationId,
             session: {
                 id: (_a = session.findTrackedSession()) === null || _a === void 0 ? void 0 : _a.id,
@@ -35,40 +35,40 @@ function startRum(configuration, internalMonitoring, getCommonContext, recorderA
         }, parentContexts.findView(), { view: { name: null } });
     });
     var _a = startRumEventCollection(lifeCycle, configuration, location, session, locationChangeObservable, getCommonContext), parentContexts = _a.parentContexts, foregroundContexts = _a.foregroundContexts, urlContexts = _a.urlContexts;
-    (0, longTaskCollection_1.startLongTaskCollection)(lifeCycle, session);
-    (0, resourceCollection_1.startResourceCollection)(lifeCycle);
-    var _b = (0, viewCollection_1.startViewCollection)(lifeCycle, configuration, location, domMutationObservable, locationChangeObservable, foregroundContexts, recorderApi, initialViewName), addTiming = _b.addTiming, startView = _b.startView, stopView = _b.stop;
-    var addError = (0, errorCollection_1.startErrorCollection)(lifeCycle, foregroundContexts).addError;
-    var addAction = (0, actionCollection_1.startActionCollection)(lifeCycle, domMutationObservable, configuration, foregroundContexts).addAction;
-    (0, requestCollection_1.startRequestCollection)(lifeCycle, configuration, session);
-    (0, performanceCollection_1.startPerformanceCollection)(lifeCycle, configuration);
-    var internalContext = (0, internalContext_1.startInternalContext)(configuration.applicationId, session, parentContexts, urlContexts);
+    longTaskCollection_1.startLongTaskCollection(lifeCycle, session);
+    resourceCollection_1.startResourceCollection(lifeCycle);
+    var _b = viewCollection_1.startViewCollection(lifeCycle, configuration, location, domMutationObservable, locationChangeObservable, foregroundContexts, recorderApi, initialViewName), addTiming = _b.addTiming, startView = _b.startView, stopView = _b.stopView;
+    var addError = errorCollection_1.startErrorCollection(lifeCycle, foregroundContexts).addError;
+    var addAction = actionCollection_1.startActionCollection(lifeCycle, domMutationObservable, configuration, foregroundContexts).addAction;
+    requestCollection_1.startRequestCollection(lifeCycle, configuration, session);
+    performanceCollection_1.startPerformanceCollection(lifeCycle, configuration);
+    var internalContext = internalContext_1.startInternalContext(configuration.applicationId, session, parentContexts, urlContexts);
     return {
         addAction: addAction,
         addError: addError,
         addTiming: addTiming,
         startView: startView,
-        stopView: stopView,
         lifeCycle: lifeCycle,
         parentContexts: parentContexts,
         session: session,
         getInternalContext: internalContext.get,
+        stopView: stopView
     };
 }
 exports.startRum = startRum;
 function startRumEventCollection(lifeCycle, configuration, location, sessionManager, locationChangeObservable, getCommonContext) {
-    var parentContexts = (0, parentContexts_1.startParentContexts)(lifeCycle);
-    var urlContexts = (0, urlContexts_1.startUrlContexts)(lifeCycle, locationChangeObservable, location);
-    var foregroundContexts = (0, foregroundContexts_1.startForegroundContexts)();
+    var parentContexts = parentContexts_1.startParentContexts(lifeCycle);
+    var urlContexts = urlContexts_1.startUrlContexts(lifeCycle, locationChangeObservable, location);
+    var foregroundContexts = foregroundContexts_1.startForegroundContexts();
     var stopBatch;
-    if ((0, browser_core_1.canUseEventBridge)()) {
-        (0, startRumEventBridge_1.startRumEventBridge)(lifeCycle);
+    if (browser_core_1.canUseEventBridge()) {
+        startRumEventBridge_1.startRumEventBridge(lifeCycle);
     }
     else {
         ;
-        (stopBatch = (0, startRumBatch_1.startRumBatch)(configuration, lifeCycle).stop);
+        (stopBatch = startRumBatch_1.startRumBatch(configuration, lifeCycle).stop);
     }
-    (0, assembly_1.startRumAssembly)(configuration, lifeCycle, sessionManager, parentContexts, urlContexts, getCommonContext);
+    assembly_1.startRumAssembly(configuration, lifeCycle, sessionManager, parentContexts, urlContexts, getCommonContext);
     return {
         parentContexts: parentContexts,
         foregroundContexts: foregroundContexts,

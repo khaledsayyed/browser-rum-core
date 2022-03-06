@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildEnv = void 0;
 exports.buildEnv = {
-    buildMode: 'dev',
-    sdkVersion: 'dev',
+    buildMode: 'release',
+    sdkVersion: '3.10.1',
 };
 //# sourceMappingURL=buildEnv.js.map

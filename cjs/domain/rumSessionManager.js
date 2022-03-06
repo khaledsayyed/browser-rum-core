@@ -19,7 +19,7 @@ var RumTrackingType;
     RumTrackingType["TRACKED_LITE"] = "2";
 })(RumTrackingType = exports.RumTrackingType || (exports.RumTrackingType = {}));
 function startRumSessionManager(configuration, lifeCycle) {
-    var sessionManager = (0, browser_core_1.startSessionManager)(configuration.cookieOptions, exports.RUM_SESSION_KEY, function (rawTrackingType) {
+    var sessionManager = browser_core_1.startSessionManager(configuration.cookieOptions, exports.RUM_SESSION_KEY, function (rawTrackingType) {
         return computeSessionState(configuration, rawTrackingType);
     });
     sessionManager.expireObservable.subscribe(function () {
@@ -63,10 +63,10 @@ function computeSessionState(configuration, rawTrackingType) {
     if (hasValidRumSession(rawTrackingType)) {
         trackingType = rawTrackingType;
     }
-    else if (!(0, browser_core_1.performDraw)(configuration.sampleRate)) {
+    else if (!browser_core_1.performDraw(configuration.sampleRate)) {
         trackingType = RumTrackingType.NOT_TRACKED;
     }
-    else if (!(0, browser_core_1.performDraw)(configuration.replaySampleRate)) {
+    else if (!browser_core_1.performDraw(configuration.replaySampleRate)) {
         trackingType = RumTrackingType.TRACKED_LITE;
     }
     else {

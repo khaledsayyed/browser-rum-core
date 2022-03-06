@@ -28,7 +28,7 @@ function startPerformanceCollection(lifeCycle, configuration) {
         handlePerformanceEntries(lifeCycle, configuration, performance.getEntries());
     }
     if (window.PerformanceObserver) {
-        var handlePerformanceEntryList_1 = (0, browser_core_1.monitor)(function (entries) {
+        var handlePerformanceEntryList_1 = browser_core_1.monitor(function (entries) {
             return handlePerformanceEntries(lifeCycle, configuration, entries.getEntries());
         });
         var mainEntries = ['resource', 'navigation', 'longtask', 'paint'];
@@ -68,20 +68,20 @@ function startPerformanceCollection(lifeCycle, configuration) {
 }
 exports.startPerformanceCollection = startPerformanceCollection;
 function retrieveInitialDocumentResourceTiming(callback) {
-    (0, browser_core_1.runOnReadyState)('interactive', function () {
+    browser_core_1.runOnReadyState('interactive', function () {
         var timing;
         var forcedAttributes = {
             entryType: 'resource',
             initiatorType: resourceUtils_1.FAKE_INITIAL_DOCUMENT,
-            traceId: (0, getDocumentTraceId_1.getDocumentTraceId)(document),
+            traceId: getDocumentTraceId_1.getDocumentTraceId(document),
         };
         if (supportPerformanceTimingEvent('navigation') && performance.getEntriesByType('navigation').length > 0) {
             var navigationEntry = performance.getEntriesByType('navigation')[0];
-            timing = (0, tslib_1.__assign)((0, tslib_1.__assign)({}, navigationEntry.toJSON()), forcedAttributes);
+            timing = tslib_1.__assign(tslib_1.__assign({}, navigationEntry.toJSON()), forcedAttributes);
         }
         else {
             var relativePerformanceTiming = computeRelativePerformanceTiming();
-            timing = (0, tslib_1.__assign)((0, tslib_1.__assign)((0, tslib_1.__assign)({}, relativePerformanceTiming), { decodedBodySize: 0, duration: relativePerformanceTiming.responseEnd, name: window.location.href, startTime: 0 }), forcedAttributes);
+            timing = tslib_1.__assign(tslib_1.__assign(tslib_1.__assign({}, relativePerformanceTiming), { decodedBodySize: 0, duration: relativePerformanceTiming.responseEnd, name: window.location.href, startTime: 0 }), forcedAttributes);
         }
         callback(timing);
     });
@@ -89,11 +89,11 @@ function retrieveInitialDocumentResourceTiming(callback) {
 exports.retrieveInitialDocumentResourceTiming = retrieveInitialDocumentResourceTiming;
 function retrieveNavigationTiming(callback) {
     function sendFakeTiming() {
-        callback((0, tslib_1.__assign)((0, tslib_1.__assign)({}, computeRelativePerformanceTiming()), { entryType: 'navigation' }));
+        callback(tslib_1.__assign(tslib_1.__assign({}, computeRelativePerformanceTiming()), { entryType: 'navigation' }));
     }
-    (0, browser_core_1.runOnReadyState)('complete', function () {
+    browser_core_1.runOnReadyState('complete', function () {
         // Send it a bit after the actual load event, so the "loadEventEnd" timing is accurate
-        setTimeout((0, browser_core_1.monitor)(sendFakeTiming));
+        setTimeout(browser_core_1.monitor(sendFakeTiming));
     });
 }
 /**
@@ -103,7 +103,7 @@ function retrieveNavigationTiming(callback) {
 function retrieveFirstInputTiming(callback) {
     var startTimeStamp = Date.now();
     var timingSent = false;
-    var removeEventListeners = (0, browser_core_1.addEventListeners)(window, ["click" /* CLICK */, "mousedown" /* MOUSE_DOWN */, "keydown" /* KEY_DOWN */, "touchstart" /* TOUCH_START */, "pointerdown" /* POINTER_DOWN */], function (evt) {
+    var removeEventListeners = browser_core_1.addEventListeners(window, ["click" /* CLICK */, "mousedown" /* MOUSE_DOWN */, "keydown" /* KEY_DOWN */, "touchstart" /* TOUCH_START */, "pointerdown" /* POINTER_DOWN */], function (evt) {
         // Only count cancelable events, which should trigger behavior important to the user.
         if (!evt.cancelable) {
             return;
@@ -113,7 +113,7 @@ function retrieveFirstInputTiming(callback) {
         // (e.g. performance.now()).
         var timing = {
             entryType: 'first-input',
-            processingStart: (0, browser_core_1.relativeNow)(),
+            processingStart: browser_core_1.relativeNow(),
             startTime: evt.timeStamp,
         };
         if (evt.type === "pointerdown" /* POINTER_DOWN */) {
@@ -130,7 +130,7 @@ function retrieveFirstInputTiming(callback) {
      * scrolling and pinch/zooming.
      */
     function sendTimingIfPointerIsNotCancelled(timing) {
-        (0, browser_core_1.addEventListeners)(window, ["pointerup" /* POINTER_UP */, "pointercancel" /* POINTER_CANCEL */], function (event) {
+        browser_core_1.addEventListeners(window, ["pointerup" /* POINTER_UP */, "pointercancel" /* POINTER_CANCEL */], function (event) {
             if (event.type === "pointerup" /* POINTER_UP */) {
                 sendTiming(timing);
             }
@@ -156,11 +156,11 @@ function computeRelativePerformanceTiming() {
     var result = {};
     var timing = performance.timing;
     for (var key in timing) {
-        if ((0, browser_core_1.isNumber)(timing[key])) {
+        if (browser_core_1.isNumber(timing[key])) {
             var numberKey = key;
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             var timingElement = timing[numberKey];
-            result[numberKey] = timingElement === 0 ? 0 : (0, browser_core_1.getRelativeTime)(timingElement);
+            result[numberKey] = timingElement === 0 ? 0 : browser_core_1.getRelativeTime(timingElement);
         }
     }
     return result;
@@ -188,6 +188,6 @@ function isIncompleteNavigation(entry) {
     return entry.entryType === 'navigation' && entry.loadEventEnd <= 0;
 }
 function isForbiddenResource(configuration, entry) {
-    return entry.entryType === 'resource' && !(0, resourceUtils_1.isAllowedRequestUrl)(configuration, entry.name);
+    return entry.entryType === 'resource' && !resourceUtils_1.isAllowedRequestUrl(configuration, entry.name);
 }
 //# sourceMappingURL=performanceCollection.js.map

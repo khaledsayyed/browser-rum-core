@@ -16,7 +16,7 @@ function trackViewMetrics(lifeCycle, domMutationObservable, scheduleViewUpdate, 
             userActionCount: 0,
         },
     };
-    var stopEventCountsTracking = (0, trackEventCounts_1.trackEventCounts)(lifeCycle, function (newEventCounts) {
+    var stopEventCountsTracking = trackEventCounts_1.trackEventCounts(lifeCycle, function (newEventCounts) {
         viewMetrics.eventCounts = newEventCounts;
         scheduleViewUpdate();
     }).stop;
@@ -76,7 +76,7 @@ function trackLoadingTime(loadType, callback) {
     };
 }
 function trackActivityLoadingTime(lifeCycle, domMutationObservable, callback) {
-    return (0, waitIdlePage_1.waitIdlePage)(lifeCycle, domMutationObservable, function (event) {
+    return waitIdlePage_1.waitIdlePage(lifeCycle, domMutationObservable, function (event) {
         if (event.hadActivity) {
             callback(event.duration);
         }
@@ -110,7 +110,7 @@ function trackCumulativeLayoutShift(lifeCycle, callback) {
             window.update(entry);
             if (window.value() > maxClsValue) {
                 maxClsValue = window.value();
-                callback((0, browser_core_1.round)(maxClsValue, 4));
+                callback(browser_core_1.round(maxClsValue, 4));
             }
         }
     }).unsubscribe;
@@ -143,6 +143,6 @@ function slidingSessionWindow() {
  * Check whether `layout-shift` is supported by the browser.
  */
 function isLayoutShiftSupported() {
-    return (0, performanceCollection_1.supportPerformanceTimingEvent)('layout-shift');
+    return performanceCollection_1.supportPerformanceTimingEvent('layout-shift');
 }
 //# sourceMappingURL=trackViewMetrics.js.map

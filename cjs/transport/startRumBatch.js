@@ -29,10 +29,10 @@ function makeRumBatch(configuration, lifeCycle) {
         replicaBatch = createRumBatch(replica.rumEndpointBuilder);
     }
     function createRumBatch(endpointBuilder, unloadCallback) {
-        return new browser_core_1.Batch(new browser_core_1.HttpRequest(endpointBuilder, configuration.batchBytesLimit), configuration.maxBatchSize, configuration.batchBytesLimit, configuration.maxMessageSize, configuration.flushTimeout, unloadCallback);
+        return new browser_core_1.Batch(new browser_core_1.HttpRequest(endpointBuilder, configuration.batchBytesLimit, { proxyApiKey: configuration.proxyApiKey }), configuration.maxBatchSize, configuration.batchBytesLimit, configuration.maxMessageSize, configuration.flushTimeout, unloadCallback);
     }
     function withReplicaApplicationId(message) {
-        return (0, browser_core_1.combine)(message, { application: { id: replica.applicationId } });
+        return browser_core_1.combine(message, { application: { id: replica.applicationId } });
     }
     var stopped = false;
     return {

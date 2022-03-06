@@ -16,8 +16,8 @@ function getActionNameFromElement(element, userProgrammaticAttribute) {
     //   Those are much likely to succeed.
     return (getActionNameFromElementProgrammatically(element, DEFAULT_PROGRAMMATIC_ATTRIBUTE) ||
         (userProgrammaticAttribute && getActionNameFromElementProgrammatically(element, userProgrammaticAttribute)) ||
-        getActionNameFromElementForStrategies(element, userProgrammaticAttribute, priorityStrategies) ||
-        getActionNameFromElementForStrategies(element, userProgrammaticAttribute, fallbackStrategies) ||
+        getActionNameFromElementForStrategies(element, priorityStrategies) ||
+        getActionNameFromElementForStrategies(element, fallbackStrategies) ||
         '');
 }
 exports.getActionNameFromElement = getActionNameFromElement;
@@ -28,7 +28,7 @@ function getActionNameFromElementProgrammatically(targetElement, programmaticAtt
     // If available, use element.closest() to match get the attribute from the element or any of its
     // parent.  Else fallback to a more traditional implementation.
     if (supportsElementClosest()) {
-        elementWithAttribute = targetElement.closest("[".concat(programmaticAttribute, "]"));
+        elementWithAttribute = targetElement.closest("[" + programmaticAttribute + "]");
     }
     else {
         var element = targetElement;
@@ -48,17 +48,17 @@ function getActionNameFromElementProgrammatically(targetElement, programmaticAtt
 }
 var priorityStrategies = [
     // associated LABEL text
-    function (element, userProgrammaticAttribute) {
+    function (element) {
         // IE does not support element.labels, so we fallback to a CSS selector based on the element id
         // instead
         if (supportsLabelProperty()) {
             if ('labels' in element && element.labels && element.labels.length > 0) {
-                return getTextualContent(element.labels[0], userProgrammaticAttribute);
+                return getTextualContent(element.labels[0]);
             }
         }
         else if (element.id) {
-            var label = element.ownerDocument && element.ownerDocument.querySelector("label[for=\"".concat(element.id.replace('"', '\\"'), "\"]"));
-            return label && getTextualContent(label, userProgrammaticAttribute);
+            var label = element.ownerDocument && element.ownerDocument.querySelector("label[for=\"" + element.id.replace('"', '\\"') + "\"]");
+            return label && getTextualContent(label);
         }
     },
     // INPUT button (and associated) value
@@ -72,21 +72,21 @@ var priorityStrategies = [
         }
     },
     // BUTTON, LABEL or button-like element text
-    function (element, userProgrammaticAttribute) {
+    function (element) {
         if (element.nodeName === 'BUTTON' || element.nodeName === 'LABEL' || element.getAttribute('role') === 'button') {
-            return getTextualContent(element, userProgrammaticAttribute);
+            return getTextualContent(element);
         }
     },
     function (element) { return element.getAttribute('aria-label'); },
     // associated element text designated by the aria-labelledby attribute
-    function (element, userProgrammaticAttribute) {
+    function (element) {
         var labelledByAttribute = element.getAttribute('aria-labelledby');
         if (labelledByAttribute) {
             return labelledByAttribute
                 .split(/\s+/)
                 .map(function (id) { return getElementById(element, id); })
                 .filter(function (label) { return Boolean(label); })
-                .map(function (element) { return getTextualContent(element, userProgrammaticAttribute); })
+                .map(getTextualContent)
                 .join(' ');
         }
     },
@@ -95,21 +95,19 @@ var priorityStrategies = [
     function (element) { return element.getAttribute('title'); },
     function (element) { return element.getAttribute('placeholder'); },
     // SELECT first OPTION text
-    function (element, userProgrammaticAttribute) {
+    function (element) {
         if ('options' in element && element.options.length > 0) {
-            return getTextualContent(element.options[0], userProgrammaticAttribute);
+            return getTextualContent(element.options[0]);
         }
     },
 ];
-var fallbackStrategies = [
-    function (element, userProgrammaticAttribute) { return getTextualContent(element, userProgrammaticAttribute); },
-];
+var fallbackStrategies = [function (element) { return getTextualContent(element); }];
 /**
  * Iterates over the target element and its parent, using the strategies list to get an action name.
  * Each strategies are applied on each element, stopping as soon as a non-empty value is returned.
  */
 var MAX_PARENTS_TO_CONSIDER = 10;
-function getActionNameFromElementForStrategies(targetElement, userProgrammaticAttribute, strategies) {
+function getActionNameFromElementForStrategies(targetElement, strategies) {
     var element = targetElement;
     var recursionCounter = 0;
     while (recursionCounter <= MAX_PARENTS_TO_CONSIDER &&
@@ -119,7 +117,7 @@ function getActionNameFromElementForStrategies(targetElement, userProgrammaticAt
         element.nodeName !== 'HEAD') {
         for (var _i = 0, strategies_1 = strategies; _i < strategies_1.length; _i++) {
             var strategy = strategies_1[_i];
-            var name_1 = strategy(element, userProgrammaticAttribute);
+            var name_1 = strategy(element);
             if (typeof name_1 === 'string') {
                 var trimmedName = name_1.trim();
                 if (trimmedName) {
@@ -140,42 +138,32 @@ function normalizeWhitespace(s) {
     return s.replace(/\s+/g, ' ');
 }
 function truncate(s) {
-    return s.length > 100 ? "".concat((0, browser_core_1.safeTruncate)(s, 100), " [...]") : s;
+    return s.length > 100 ? browser_core_1.safeTruncate(s, 100) + " [...]" : s;
 }
 function getElementById(refElement, id) {
     // Use the element ownerDocument here, because tests are executed in an iframe, so
     // document.getElementById won't work.
     return refElement.ownerDocument ? refElement.ownerDocument.getElementById(id) : null;
 }
-function getTextualContent(element, userProgrammaticAttribute) {
+function getTextualContent(element) {
     if (element.isContentEditable) {
         return;
     }
     if ('innerText' in element) {
-        var text_1 = element.innerText;
-        var removeTextFromElements = function (query) {
-            var list = element.querySelectorAll(query);
-            for (var index = 0; index < list.length; index += 1) {
-                var element_1 = list[index];
-                if ('innerText' in element_1) {
-                    var textToReplace = element_1.innerText;
-                    if (textToReplace && textToReplace.trim().length > 0) {
-                        text_1 = text_1.replace(textToReplace, '');
-                    }
-                }
-            }
-        };
+        var text = element.innerText;
         if (!supportsInnerTextScriptAndStyleRemoval()) {
             // remove the inner text of SCRIPT and STYLES from the result. This is a bit dirty, but should
             // be relatively fast and work in most cases.
-            removeTextFromElements('script, style');
+            var elementsTextToRemove = element.querySelectorAll('script, style');
+            // eslint-disable-next-line @typescript-eslint/prefer-for-of
+            for (var i = 0; i < elementsTextToRemove.length; i += 1) {
+                var innerText = elementsTextToRemove[i].innerText;
+                if (innerText.trim().length > 0) {
+                    text = text.replace(innerText, '');
+                }
+            }
         }
-        // remove the text of elements with programmatic attribute value
-        removeTextFromElements("[".concat(DEFAULT_PROGRAMMATIC_ATTRIBUTE, "]"));
-        if (userProgrammaticAttribute) {
-            removeTextFromElements("[".concat(userProgrammaticAttribute, "]"));
-        }
-        return text_1;
+        return text;
     }
     return element.textContent;
 }
@@ -197,7 +185,7 @@ function getTextualContent(element, userProgrammaticAttribute) {
  * [2]: https://github.com/DataDog/browser-sdk/issues/1084
  */
 function supportsInnerTextScriptAndStyleRemoval() {
-    return !(0, browser_core_1.isIE)();
+    return !browser_core_1.isIE();
 }
 /**
  * Returns true if the browser supports the element.labels property.  This should be the case

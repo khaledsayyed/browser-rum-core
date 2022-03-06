@@ -22,7 +22,7 @@ function getDocumentTraceDataFromComment(document) {
     if (!comment) {
         return undefined;
     }
-    return createDocumentTraceData((0, browser_core_1.findCommaSeparatedValue)(comment, 'trace-id'), (0, browser_core_1.findCommaSeparatedValue)(comment, 'trace-time'));
+    return createDocumentTraceData(browser_core_1.findCommaSeparatedValue(comment, 'trace-id'), browser_core_1.findCommaSeparatedValue(comment, 'trace-time'));
 }
 exports.getDocumentTraceDataFromComment = getDocumentTraceDataFromComment;
 function createDocumentTraceData(traceId, rawTraceTime) {

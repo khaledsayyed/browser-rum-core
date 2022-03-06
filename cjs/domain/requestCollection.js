@@ -7,15 +7,15 @@ var resourceUtils_1 = require("./rumEventsCollection/resource/resourceUtils");
 var tracer_1 = require("./tracing/tracer");
 var nextRequestIndex = 1;
 function startRequestCollection(lifeCycle, configuration, sessionManager) {
-    var tracer = (0, tracer_1.startTracer)(configuration, sessionManager);
+    var tracer = tracer_1.startTracer(configuration, sessionManager);
     trackXhr(lifeCycle, configuration, tracer);
     trackFetch(lifeCycle, configuration, tracer);
 }
 exports.startRequestCollection = startRequestCollection;
 function trackXhr(lifeCycle, configuration, tracer) {
-    var subscription = (0, browser_core_1.initXhrObservable)().subscribe(function (rawContext) {
+    var subscription = browser_core_1.initXhrObservable().subscribe(function (rawContext) {
         var context = rawContext;
-        if (!(0, resourceUtils_1.isAllowedRequestUrl)(configuration, context.url)) {
+        if (!resourceUtils_1.isAllowedRequestUrl(configuration, context.url)) {
             return;
         }
         switch (context.state) {
@@ -48,9 +48,9 @@ function trackXhr(lifeCycle, configuration, tracer) {
 }
 exports.trackXhr = trackXhr;
 function trackFetch(lifeCycle, configuration, tracer) {
-    var subscription = (0, browser_core_1.initFetchObservable)().subscribe(function (rawContext) {
+    var subscription = browser_core_1.initFetchObservable().subscribe(function (rawContext) {
         var context = rawContext;
-        if (!(0, resourceUtils_1.isAllowedRequestUrl)(configuration, context.url)) {
+        if (!resourceUtils_1.isAllowedRequestUrl(configuration, context.url)) {
             return;
         }
         switch (context.state) {

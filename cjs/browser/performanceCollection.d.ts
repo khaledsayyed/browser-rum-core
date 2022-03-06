@@ -1,4 +1,4 @@
-import { Duration, RelativeTime } from '@datadog/browser-core';
+import { Duration, Omit, RelativeTime } from '@datadog/browser-core';
 import { RumConfiguration } from '../domain/configuration';
 import { LifeCycle } from '../domain/lifeCycle';
 import { PerformanceEntryRepresentation } from '../domainContext.types';

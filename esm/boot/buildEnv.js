@@ -1,5 +1,5 @@
 export var buildEnv = {
-    buildMode: 'dev',
-    sdkVersion: 'dev',
+    buildMode: 'release',
+    sdkVersion: '3.10.1',
 };
 //# sourceMappingURL=buildEnv.js.map

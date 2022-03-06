@@ -9,17 +9,17 @@ var configuration_1 = require("../domain/configuration");
 function makeRumPublicApi(startRumImpl, recorderApi, _a) {
     var _b = _a === void 0 ? {} : _a, _c = _b.ignoreInitIfSyntheticsWillInjectRum, ignoreInitIfSyntheticsWillInjectRum = _c === void 0 ? true : _c;
     var isAlreadyInitialized = false;
-    var globalContextManager = (0, browser_core_1.createContextManager)();
+    var globalContextManager = browser_core_1.createContextManager();
     var user = {};
     var getInternalContextStrategy = function () { return undefined; };
     var getInitConfigurationStrategy = function () { return undefined; };
     var bufferApiCalls = new browser_core_1.BoundedBuffer();
     var addTimingStrategy = function (name, time) {
-        if (time === void 0) { time = (0, browser_core_1.timeStampNow)(); }
+        if (time === void 0) { time = browser_core_1.timeStampNow(); }
         bufferApiCalls.add(function () { return addTimingStrategy(name, time); });
     };
     var startViewStrategy = function (name, startClocks) {
-        if (startClocks === void 0) { startClocks = (0, browser_core_1.clocksNow)(); }
+        if (startClocks === void 0) { startClocks = browser_core_1.clocksNow(); }
         bufferApiCalls.add(function () { return startViewStrategy(name, startClocks); });
     };
     var addActionStrategy = function (action, commonContext) {
@@ -34,7 +34,7 @@ function makeRumPublicApi(startRumImpl, recorderApi, _a) {
         bufferApiCalls.add(function () { return stopViewStrategy(); });
     };
     function clonedCommonContext() {
-        return (0, browser_core_1.deepClone)({
+        return browser_core_1.deepClone({
             context: globalContextManager.get(),
             user: user,
         });
@@ -44,10 +44,10 @@ function makeRumPublicApi(startRumImpl, recorderApi, _a) {
         // completely discard the customer application RUM instance by ignoring their init() call.  But,
         // we should not ignore the init() call from the Synthetics-injected RUM instance, so the
         // internal `ignoreInitIfSyntheticsWillInjectRum` option is here to bypass this condition.
-        if (ignoreInitIfSyntheticsWillInjectRum && (0, syntheticsContext_1.willSyntheticsInjectRum)()) {
+        if (ignoreInitIfSyntheticsWillInjectRum && syntheticsContext_1.willSyntheticsInjectRum()) {
             return;
         }
-        if ((0, browser_core_1.canUseEventBridge)()) {
+        if (browser_core_1.canUseEventBridge()) {
             initConfiguration = overrideInitConfigurationForBridge(initConfiguration);
         }
         else if (!canHandleSession(initConfiguration)) {
@@ -56,11 +56,11 @@ function makeRumPublicApi(startRumImpl, recorderApi, _a) {
         if (!canInitRum(initConfiguration)) {
             return;
         }
-        var configuration = (0, configuration_1.validateAndBuildRumConfiguration)(initConfiguration);
+        var configuration = configuration_1.validateAndBuildRumConfiguration(initConfiguration);
         if (!configuration) {
             return;
         }
-        var internalMonitoring = (0, browser_core_1.startInternalMonitoring)(configuration);
+        var internalMonitoring = browser_core_1.startInternalMonitoring(configuration);
         if (!configuration.trackViewsManually) {
             doStartRum(configuration, internalMonitoring);
         }
@@ -75,7 +75,7 @@ function makeRumPublicApi(startRumImpl, recorderApi, _a) {
             };
             beforeInitCalls.drain();
         }
-        getInitConfigurationStrategy = function () { return (0, browser_core_1.deepClone)(initConfiguration); };
+        getInitConfigurationStrategy = function () { return browser_core_1.deepClone(initConfiguration); };
         isAlreadyInitialized = true;
     }
     function doStartRum(configuration, internalMonitoring, initialViewName) {
@@ -84,41 +84,41 @@ function makeRumPublicApi(startRumImpl, recorderApi, _a) {
             context: globalContextManager.get(),
             hasReplay: recorderApi.isRecording() ? true : undefined,
         }); }, recorderApi, initialViewName);
-        (startViewStrategy = startRumResults.startView, stopViewStrategy = startRumResults.stopView, addActionStrategy = startRumResults.addAction, addErrorStrategy = startRumResults.addError, addTimingStrategy = startRumResults.addTiming, getInternalContextStrategy = startRumResults.getInternalContext);
+        (startViewStrategy = startRumResults.startView, addActionStrategy = startRumResults.addAction, addErrorStrategy = startRumResults.addError, addTimingStrategy = startRumResults.addTiming, getInternalContextStrategy = startRumResults.getInternalContext, stopViewStrategy = startRumResults.stopView);
         bufferApiCalls.drain();
         recorderApi.onRumStart(startRumResults.lifeCycle, configuration, startRumResults.session, startRumResults.parentContexts);
     }
-    var rumPublicApi = (0, browser_core_1.makePublicApi)({
-        init: (0, browser_core_1.monitor)(initRum),
-        addRumGlobalContext: (0, browser_core_1.monitor)(globalContextManager.add),
-        removeRumGlobalContext: (0, browser_core_1.monitor)(globalContextManager.remove),
-        getRumGlobalContext: (0, browser_core_1.monitor)(globalContextManager.get),
-        setRumGlobalContext: (0, browser_core_1.monitor)(globalContextManager.set),
-        getInternalContext: (0, browser_core_1.monitor)(function (startTime) { return getInternalContextStrategy(startTime); }),
-        getInitConfiguration: (0, browser_core_1.monitor)(function () { return getInitConfigurationStrategy(); }),
-        addAction: (0, browser_core_1.monitor)(function (name, context) {
+    var rumPublicApi = browser_core_1.makePublicApi({
+        init: browser_core_1.monitor(initRum),
+        addRumGlobalContext: browser_core_1.monitor(globalContextManager.add),
+        removeRumGlobalContext: browser_core_1.monitor(globalContextManager.remove),
+        getRumGlobalContext: browser_core_1.monitor(globalContextManager.get),
+        setRumGlobalContext: browser_core_1.monitor(globalContextManager.set),
+        getInternalContext: browser_core_1.monitor(function (startTime) { return getInternalContextStrategy(startTime); }),
+        getInitConfiguration: browser_core_1.monitor(function () { return getInitConfigurationStrategy(); }),
+        addAction: browser_core_1.monitor(function (name, context) {
             addActionStrategy({
                 name: name,
-                context: (0, browser_core_1.deepClone)(context),
-                startClocks: (0, browser_core_1.clocksNow)(),
+                context: browser_core_1.deepClone(context),
+                startClocks: browser_core_1.clocksNow(),
                 type: rawRumEvent_types_1.ActionType.CUSTOM,
             });
         }),
         addError: function (error, context) {
-            var handlingStack = (0, browser_core_1.createHandlingStack)();
-            (0, browser_core_1.callMonitored)(function () {
+            var handlingStack = browser_core_1.createHandlingStack();
+            browser_core_1.callMonitored(function () {
                 addErrorStrategy({
                     error: error,
                     handlingStack: handlingStack,
-                    context: (0, browser_core_1.deepClone)(context),
-                    startClocks: (0, browser_core_1.clocksNow)(),
+                    context: browser_core_1.deepClone(context),
+                    startClocks: browser_core_1.clocksNow(),
                 });
             });
         },
-        addTiming: (0, browser_core_1.monitor)(function (name, time) {
+        addTiming: browser_core_1.monitor(function (name, time) {
             addTimingStrategy(name, time);
         }),
-        setUser: (0, browser_core_1.monitor)(function (newUser) {
+        setUser: browser_core_1.monitor(function (newUser) {
             var sanitizedUser = sanitizeUser(newUser);
             if (sanitizedUser) {
                 user = sanitizedUser;
@@ -127,22 +127,24 @@ function makeRumPublicApi(startRumImpl, recorderApi, _a) {
                 browser_core_1.display.error('Unsupported user:', newUser);
             }
         }),
-        removeUser: (0, browser_core_1.monitor)(function () {
+        removeUser: browser_core_1.monitor(function () {
             user = {};
         }),
-        startView: (0, browser_core_1.monitor)(function (name) {
+        startView: browser_core_1.monitor(function (name) {
             startViewStrategy(name);
         }),
-        stopView: (0, browser_core_1.monitor)(function () { stopViewStrategy(); }),
-        startSessionReplayRecording: (0, browser_core_1.monitor)(recorderApi.start),
-        stopSessionReplayRecording: (0, browser_core_1.monitor)(recorderApi.stop),
+        stopView: browser_core_1.monitor(function () {
+            stopViewStrategy();
+        }),
+        startSessionReplayRecording: browser_core_1.monitor(recorderApi.start),
+        stopSessionReplayRecording: browser_core_1.monitor(recorderApi.stop),
     });
     return rumPublicApi;
     function sanitizeUser(newUser) {
         if (typeof newUser !== 'object' || !newUser) {
             return;
         }
-        var result = (0, browser_core_1.deepClone)(newUser);
+        var result = browser_core_1.deepClone(newUser);
         if ('id' in result) {
             result.id = String(result.id);
         }
@@ -155,7 +157,7 @@ function makeRumPublicApi(startRumImpl, recorderApi, _a) {
         return result;
     }
     function canHandleSession(initConfiguration) {
-        if (!(0, browser_core_1.areCookiesAuthorized)((0, browser_core_1.buildCookieOptions)(initConfiguration))) {
+        if (!browser_core_1.areCookiesAuthorized(browser_core_1.buildCookieOptions(initConfiguration))) {
             browser_core_1.display.warn('Cookies are not authorized, we will not send any data.');
             return false;
         }
@@ -175,7 +177,7 @@ function makeRumPublicApi(startRumImpl, recorderApi, _a) {
         return true;
     }
     function overrideInitConfigurationForBridge(initConfiguration) {
-        return (0, tslib_1.__assign)((0, tslib_1.__assign)({}, initConfiguration), { applicationId: 'empty', clientToken: 'empty', sampleRate: 100 });
+        return tslib_1.__assign(tslib_1.__assign({}, initConfiguration), { applicationId: 'empty', clientToken: 'empty', sampleRate: 100 });
     }
     function isLocalFile() {
         return window.location.protocol === 'file:';

@@ -22,7 +22,7 @@ function startInternalContext(applicationId, sessionManager, parentContexts, url
                             id: actionContext.action.id,
                         }
                         : undefined,
-                    view: (0, tslib_1.__assign)((0, tslib_1.__assign)({}, viewContext.view), urlContext.view),
+                    view: tslib_1.__assign(tslib_1.__assign({}, viewContext.view), urlContext.view),
                 };
             }
         },

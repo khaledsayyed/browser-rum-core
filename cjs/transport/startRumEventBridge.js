@@ -4,7 +4,7 @@ exports.startRumEventBridge = void 0;
 var browser_core_1 = require("@datadog/browser-core");
 var lifeCycle_1 = require("../domain/lifeCycle");
 function startRumEventBridge(lifeCycle) {
-    var bridge = (0, browser_core_1.getEventBridge)();
+    var bridge = browser_core_1.getEventBridge();
     lifeCycle.subscribe(lifeCycle_1.LifeCycleEventType.RUM_EVENT_COLLECTED, function (serverRumEvent) {
         bridge.send(serverRumEvent.type, serverRumEvent);
     });

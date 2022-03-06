@@ -45,17 +45,17 @@ exports.waitIdlePage = waitIdlePage;
 function doWaitIdlePage(pageActivityObservable, idlePageCallback, maxDuration) {
     var idleTimeoutId;
     var hasCompleted = false;
-    var startTime = (0, browser_core_1.timeStampNow)();
-    var validationTimeoutId = setTimeout((0, browser_core_1.monitor)(function () { return complete({ hadActivity: false }); }), exports.PAGE_ACTIVITY_VALIDATION_DELAY);
+    var startTime = browser_core_1.timeStampNow();
+    var validationTimeoutId = setTimeout(browser_core_1.monitor(function () { return complete({ hadActivity: false }); }), exports.PAGE_ACTIVITY_VALIDATION_DELAY);
     var maxDurationTimeoutId = maxDuration &&
-        setTimeout((0, browser_core_1.monitor)(function () { return complete({ hadActivity: true, duration: (0, browser_core_1.elapsed)(startTime, (0, browser_core_1.timeStampNow)()) }); }), maxDuration);
+        setTimeout(browser_core_1.monitor(function () { return complete({ hadActivity: true, duration: browser_core_1.elapsed(startTime, browser_core_1.timeStampNow()) }); }), maxDuration);
     var pageActivitySubscription = pageActivityObservable.subscribe(function (_a) {
         var isBusy = _a.isBusy;
         clearTimeout(validationTimeoutId);
         clearTimeout(idleTimeoutId);
-        var lastChangeTime = (0, browser_core_1.timeStampNow)();
+        var lastChangeTime = browser_core_1.timeStampNow();
         if (!isBusy) {
-            idleTimeoutId = setTimeout((0, browser_core_1.monitor)(function () { return complete({ hadActivity: true, duration: (0, browser_core_1.elapsed)(startTime, lastChangeTime) }); }), exports.PAGE_ACTIVITY_END_DELAY);
+            idleTimeoutId = setTimeout(browser_core_1.monitor(function () { return complete({ hadActivity: true, duration: browser_core_1.elapsed(startTime, lastChangeTime) }); }), exports.PAGE_ACTIVITY_END_DELAY);
         }
     });
     var stop = function () {

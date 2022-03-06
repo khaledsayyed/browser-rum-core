@@ -12,7 +12,8 @@ export function startErrorCollection(lifeCycle, foregroundContexts) {
 export function doStartErrorCollection(lifeCycle, foregroundContexts) {
     lifeCycle.subscribe(LifeCycleEventType.RAW_ERROR_COLLECTED, function (_a) {
         var error = _a.error, customerContext = _a.customerContext, savedCommonContext = _a.savedCommonContext;
-        lifeCycle.notify(LifeCycleEventType.RAW_RUM_EVENT_COLLECTED, __assign({ customerContext: customerContext, savedCommonContext: savedCommonContext }, processError(error, foregroundContexts)));
+        lifeCycle.notify(LifeCycleEventType.RAW_RUM_EVENT_COLLECTED, __assign({ customerContext: customerContext,
+            savedCommonContext: savedCommonContext }, processError(error, foregroundContexts)));
     });
     return {
         addError: function (_a, savedCommonContext) {
