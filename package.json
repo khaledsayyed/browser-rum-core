@@ -12,7 +12,7 @@
     "replace-build-env": "node ../../scripts/replace-build-env.js"
   },
   "dependencies": {
-    "@datadog/browser-core": "khaledsayyed/browser-core#3360715f0cfc6ee3d5da8799e43be9bb1351a6ba",
+    "@datadog/browser-core": "khaledsayyed/browser-core#69f4a5427cdd9a754a35a4914e2f83dea5ed49c2",
     "tslib": "^1.10.0"
   },
   "devDependencies": {

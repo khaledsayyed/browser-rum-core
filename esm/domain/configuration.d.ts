@@ -5,7 +5,6 @@ export interface RumInitConfiguration extends InitConfiguration {
     applicationId: string;
     beforeSend?: ((event: RumEvent, context: RumEventDomainContext) => void | boolean) | undefined;
     defaultPrivacyLevel?: DefaultPrivacyLevel | undefined;
-    proxyApiKey?: string;
 }
 export declare type HybridInitConfiguration = Omit<RumInitConfiguration, 'applicationId' | 'clientToken'>;
 export interface RumConfiguration extends Configuration {
